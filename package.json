@@ -6,7 +6,7 @@
   "scripts": {
     "test": "npx mocha ./test/*.test.js",
     "test:report": "npx mocha ./test/*.test.js  -R spec",
-    "test:debug": "npx env-cmd ./debug.env npx mocha ./test/*.test.js",
+    "test:debug": "npx env-cmd ./config/debug.env npx mocha ./test/*.test.js",
     "test:debug:report": "npx env-cmd ./debug.env npx mocha ./test/*.test.js -R spec"
   },
   "repository": {
