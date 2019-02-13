@@ -1,0 +1,36 @@
+{
+  "name": "node-embind",
+  "version": "0.1.0",
+  "description": "Emscripten embind for Node.JS addon",
+  "main": "index.js",
+  "scripts": {
+    "test": "npx mocha ./test/*.test.js",
+    "test:report": "npx mocha ./test/*.test.js  -R spec",
+    "test:debug": "npx env-cmd ./debug.env npx mocha ./test/*.test.js",
+    "test:debug:report": "npx env-cmd ./debug.env npx mocha ./test/*.test.js -R spec"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com"
+  },
+  "keywords": [
+    "embind",
+    "N-API"
+  ],
+  "author": "Mingyi Zhang",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com"
+  },
+  "homepage": "https://github.com#readme",
+  "dependencies": {
+    "node-gyp": "^3.8.0"
+  },
+  "devDependencies": {
+    "chalk": "^2.4.2",
+    "chai": "^4.2.0",
+    "commander": "^2.19.0",
+    "env-cmd": "^8.0.2",
+    "mocha": "^5.2.0"
+  }
+}
