@@ -32,12 +32,10 @@ MODULE_LIST.forEach(name =>{
             if(exports[c] == undefined){
                 exports[c] = {MODULE_LIST}
             }
-			console.log(`${c} = ${name}`);
-
+            
             exports[c][name] = require(mpath);
             if(CONFIG_ == c ){
                 exports[name] = exports[c][name];
-				console.log(`*** ${name}`,exports[name])
             }
         }
     })
