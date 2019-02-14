@@ -40,8 +40,12 @@ def _filter(pkg_name , builder):
     return builder
 
 def Main(name):
+    NODE_VERSION = os.environ.get('NODE_VERSION','10.15.1')
     
-    docker_entry_script = 'echo @@@@@@@@@@@@@@@@@ && echo $NVM_DIR && echo ____@____________'
+    docker_entry_script = 'source /home/conan/.nvm/nvm.sh'
+    ' && nvm install {0}'
+    ' && nvm use {0}'.format(NODE_VERSION)
+
     builder = ConanMultiPackager(docker_entry_script=docker_entry_script)
     builder.add_common_builds(pure_c=False)
     builder = _filter(name, builder)
