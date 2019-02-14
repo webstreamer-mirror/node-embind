@@ -9,7 +9,7 @@ class NodeEmbind(ConanFile):
     name = "node-embind"
     version = "0.1.0"
     branch = "master"
-    generators = "cmake"
+    # generators = "cmake"
     settings = "os", "compiler", "arch", "build_type"
     # options = {}
     # default_options = "shared=True"
@@ -22,7 +22,7 @@ class NodeEmbind(ConanFile):
     source_subfolder = "source_subfolder"
 
     def config(self):
-        del self.settings.compiler.libcxx
+        self.settings.compiler.libcxx = 'libstdc++11'
 
     def source(self):
         self.run('npm install')
