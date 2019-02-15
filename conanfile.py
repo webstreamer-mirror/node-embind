@@ -1,6 +1,6 @@
 import os
 import shutil
-
+import platform
 from conans import CMake, tools
 from conans import ConanFile
 
@@ -22,7 +22,8 @@ class NodeEmbind(ConanFile):
     source_subfolder = "source_subfolder"
 
     def config(self):
-        self.settings.compiler.libcxx = 'libstdc++11'
+        if platform.system() == 'Linux': 
+            self.settings.compiler.libcxx = 'libstdc++11'
 
     def source(self):
         self.run('npm install')
