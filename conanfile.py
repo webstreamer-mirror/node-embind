@@ -26,6 +26,8 @@ class NodeEmbind(ConanFile):
             self.settings.compiler.libcxx = 'libstdc++11'
 
     def source(self):
+        self.run('bash -c "source /home/conan/.nvm/nvm.sh && node --version"')
+        self.run('npm --version')
         self.run('npm install')
 
     def build(self):
