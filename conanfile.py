@@ -24,23 +24,13 @@ class NodeEmbind(ConanFile):
     def call(self, cmd ):
 
         CONAN_DOCKER_IMAGE = os.environ.get('CONAN_DOCKER_IMAGE','')
-        PYTHON2_HOME = os.environ.get('PYTHON2_HOME')
         if platform.system() == 'Linux':
             if CONAN_DOCKER_IMAGE.startswith('webstreamer/node-gyp-gcc54'):
                 self.run('bash -c "source /home/conan/.nvm/nvm.sh && %s"'%cmd)
                 return
         self.run(cmd)
 
-
-
-    def nrun(self, cmd):
-        if platform.system() == 'Linux': 
-            self.run('bash -c "source /home/conan/.nvm/nvm.sh && %s"'%cmd)
-        else:
-            self.run(cmd)
-
     def config(self):
-        
         if platform.system() == 'Linux': 
             self.settings.compiler.libcxx = 'libstdc++11'
 
