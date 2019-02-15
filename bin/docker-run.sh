@@ -1,6 +1,6 @@
 
 
-_DOCKER_IMAGE='webstreamer/node-gyp-gcc54:latest'
+_DOCKER_IMAGE='webstreamer/node-gyp-gcc54:0.1'
 _PROJECT_DIR=$PWD
 _DISABLE_PULL=
 _COMMANDS=
@@ -57,11 +57,15 @@ echo _DOCKER_IMAGE $_DOCKER_IMAGE
 echo _PROJECT_DIR  $_PROJECT_DIR
 echo _DISABLE_PULL $_DISABLE_PULL
 echo "\"$@\""
-if [ -z $_DISABLE_PULL];
+if [ -z $_DISABLE_PULL ]; then
    echo sudo -E docker pull $_DOCKER_IMAGE
 fi
 
-
 sudo -E docker run --rm -v $_PROJECT_DIR:/home/conan/project $_DOCKER_IMAGE \
-  /bin/bash -c "source /home/conan/.nvm/nvm.sh && cd project && $@"
-  
+  /bin/bash -c "source /home/conan/.nvm/nvm.sh && cd project \
+  && echo '        ================================='\
+  && echo \"        $_DOCKER_IMAGE\"\
+  && echo '        ================================='\
+  && $@"
+
+ 
