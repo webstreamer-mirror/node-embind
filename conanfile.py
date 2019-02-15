@@ -35,7 +35,11 @@ class NodeEmbind(ConanFile):
             self.settings.compiler.libcxx = 'libstdc++11'
 
     def source(self):
+        self.run('echo ========================')
+        self.run('pwd')
         self.run('pyenv local 2.7.15')
+        self.run('echo ========================')
+
         return
 
         self.call('npm install')
