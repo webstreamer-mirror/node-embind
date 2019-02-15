@@ -71,7 +71,12 @@ class GYP {
       var options =['-C',this.options.dir];
   
       if(process.platform == 'win32'){
-        options.splice(0,0,'--msvs_version=2017','--python','c:/python27');
+        options.splice(0,0,'--msvs_version=2017');
+        this.options.python2 = this.options.python2 || 'c:/python27'
+      }
+
+      if (this.options.python2) {
+        options.splice(0,0,'--python',this.options.python2);
       }
   
       if(this.options.debug){

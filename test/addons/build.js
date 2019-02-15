@@ -47,6 +47,11 @@ async function Main(argv) {
         _BuildingProject = name;
         var path = `${__dirname}/${name}`
         var gyp = new GYP(path, debug);
+
+        if (process.env.PYTHON2_HOME){
+            gyp.options.python2 = process.env.PYTHON2_HOME
+        }
+        
         for (var j in command) {
             var cmd = command[j];
             await gyp.run_(cmd);
