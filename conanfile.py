@@ -45,7 +45,7 @@ class NodeEmbind(ConanFile):
 
         PYTHON2_HOME = os.environ.get('PYTHON2_HOME')
         if PYTHON2_HOME:
-            options += '--python %s'%PYTHON2_HOME
+            os.environ['PYTHON'] = PYTHON2_HOME
 
         self.call('node test/addons/build.js hello %s'%options)
 
