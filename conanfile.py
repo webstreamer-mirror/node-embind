@@ -45,6 +45,7 @@ class NodeEmbind(ConanFile):
 
         if platform.system() == 'Linux': 
             self.run('pyenv local 2.7.15')
+        self.run('pwd && python --version')
 
         self.call('node test/addons/build.js hello %s'%options)
 
