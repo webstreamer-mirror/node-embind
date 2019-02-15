@@ -43,7 +43,7 @@ class NodeEmbind(ConanFile):
         if self.settings.build_type == 'Debug':
             options +=' --debug'
 
-        self.call('pyenv local 2.7.15 && node test/addons/build.js hello %s'%options)
+        self.call('pyenv local 2.7.15 && python2 --version && node test/addons/build.js hello %s'%options)
 
         if self.settings.build_type == 'Debug':
             self.call('npm run test:debug')
