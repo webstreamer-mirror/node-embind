@@ -21,6 +21,18 @@ class NodeEmbind(ConanFile):
 
     source_subfolder = "source_subfolder"
 
+    def call(self, cmd ):
+
+        CONAN_DOCKER_IMAGE = os.environ.get('CONAN_DOCKER_IMAGE','')
+        PYTHON2_HOME = os.environ.get('PYTHON2_HOME')
+        if platform.system() == 'Linux':
+            if CONAN_DOCKER_IMAGE.startswith('webstreamer/node-gyp-gcc54'):
+                self.run('bash -c "source /home/conan/.nvm/nvm.sh && %s"'%cmd)
+                return
+        self.run(cmd)
+
+
+
     def nrun(self, cmd):
         if platform.system() == 'Linux': 
             self.run('bash -c "source /home/conan/.nvm/nvm.sh && %s"'%cmd)
@@ -28,6 +40,7 @@ class NodeEmbind(ConanFile):
             self.run(cmd)
 
     def config(self):
+        
         if platform.system() == 'Linux': 
             self.settings.compiler.libcxx = 'libstdc++11'
 
@@ -40,12 +53,16 @@ class NodeEmbind(ConanFile):
         if self.settings.build_type == 'Debug':
             options +=' --debug'
 
-        self.nrun('node test/addons/build.js hello %s'%options)
+        PYTHON2_HOME = os.environ.get('PYTHON2_HOME')
+        if PYTHON2_HOME:
+            options += '--python %s'%PYTHON2_HOME
+
+        self.call('node test/addons/build.js hello %s'%options)
 
         if self.settings.build_type == 'Debug':
-            self.nrun('npm run test:debug')
+            self.call('npm run test:debug')
         else:
-            self.nrun('npm test')
+            self.call('npm test')
 
 
 
