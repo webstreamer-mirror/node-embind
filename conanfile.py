@@ -21,14 +21,18 @@ class NodeEmbind(ConanFile):
 
     source_subfolder = "source_subfolder"
 
+    def nrun(self, cmd):
+        if platform.system() == 'Linux': 
+            self.run('bash -c "source /home/conan/.nvm/nvm.sh && %s"'%cmd)
+        else:
+            self.run(cmd)
+
     def config(self):
         if platform.system() == 'Linux': 
             self.settings.compiler.libcxx = 'libstdc++11'
 
     def source(self):
-        self.run('bash -c "source /home/conan/.nvm/nvm.sh && node --version"')
-        self.run('npm --version')
-        self.run('npm install')
+        self.nrun('npm install')
 
     def build(self):
         options = ''
@@ -36,12 +40,12 @@ class NodeEmbind(ConanFile):
         if self.settings.build_type == 'Debug':
             options +=' --debug'
 
-        self.run('node test/addons/build.js hello %s'%options)
+        self.nrun('node test/addons/build.js hello %s'%options)
 
         if self.settings.build_type == 'Debug':
-            self.run('npm run test:debug')
+            self.nrun('npm run test:debug')
         else:
-            self.run('npm test')
+            self.nrun('npm test')
 
 
 
