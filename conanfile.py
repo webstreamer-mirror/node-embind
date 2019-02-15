@@ -43,9 +43,8 @@ class NodeEmbind(ConanFile):
         if self.settings.build_type == 'Debug':
             options +=' --debug'
 
-        PYTHON2_HOME = os.environ.get('PYTHON2_HOME')
-        if PYTHON2_HOME:
-            os.environ['PYTHON'] = PYTHON2_HOME
+        if platform.system() == 'Linux': 
+            self.run('pyenv local 2.7.15')
 
         self.call('node test/addons/build.js hello %s'%options)
 
