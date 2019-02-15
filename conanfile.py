@@ -37,6 +37,8 @@ class NodeEmbind(ConanFile):
     def source(self):
         self.run('echo ========================')
         self.run('pwd')
+        self.run('pyenv root')
+        self.run('pyenv --help')
         self.run('pyenv local 2.7.15')
         self.run('echo ========================')
 
