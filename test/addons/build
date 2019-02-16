@@ -15,13 +15,13 @@ _ERROR=
 function BuildOne(){
 
  local addon_dir=$1
- npx node-gyp configure -C %addon_dir% $_DEBUG $_PYTHON2
+ npx node-gyp configure -C $addon_dir $_DEBUG $_PYTHON2
  if [ $? != 0 ]; then
    _ERROR= "configure failed ($addon_dir) !"
    return 1
  fi
  
- npx node-gyp rebuild -C %addon_dir%
+ npx node-gyp rebuild -C $addon_dir
  if [ $? != 0 ]; then
    _ERROR= "build failed ($addon_dir) !"
    return 1
