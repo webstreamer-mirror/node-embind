@@ -11,10 +11,8 @@ if "%NODE_ENV%" EQU Debug  set _DEBUG=--debug
 if defined PYTHON set _PYTHON2=%PYTHON%
 
 if "%1" EQU "" (
-  echo "ALL"
   call :BuildAll 
 ) else (
-  echo "BuildOne %1"
   call :BuildOne %1
 )
 
