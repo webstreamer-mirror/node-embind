@@ -1,0 +1,51 @@
+#!/bin/sh
+basedir=$(dirname "$(echo "$0" | sed -e 's,\\,/,g')")
+
+_dirname=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+
+_PYTHON2=
+_DEBUG=
+_ERROR=
+
+[ "$NODE_ENV" == Debug ] && _DEBUG=--debug 
+[ ! -z "$PYTHON" ] && _PYTHON2="--python $PYTHON"
+
+
+
+function BuildOne(){
+
+ local addon_dir=$1
+ npx node-gyp configure -C %addon_dir% $_DEBUG $_PYTHON2
+ if [ $? != 0 ]; then
+   _ERROR= "configure failed ($addon_dir) !"
+   return 1
+ fi
+ 
+ npx node-gyp rebuild -C %addon_dir%
+ if [ $? != 0 ]; then
+   _ERROR= "build failed ($addon_dir) !"
+   return 1
+ fi
+ 
+}
+
+function BuildAll(){
+
+  for i in $(find $_dirname -mindepth 1 -maxdepth 1  -type d)
+  do
+
+    if [ -f $i/binding.gyp ]; then
+       BuildOne $i
+    else
+      echo skip $i as no binding.gyp
+    fi
+  done
+
+}
+
+
+if [ "$1" == "" ]; then
+  BuildAll 
+else
+  BuildOne
+fi
