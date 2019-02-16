@@ -13,7 +13,7 @@ if defined PYTHON set _PYTHON2=%PYTHON%
 if "%1" EQU "" (
   call :BuildAll 
 ) else (
-  call :BuildOne %1
+  call :BuildOne %_dirname%%1
 )
 
 

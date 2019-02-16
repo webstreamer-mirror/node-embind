@@ -3,7 +3,19 @@ const fs = require('fs');
 const log = console.log;
 
 
- 
+function findAddons(path){
+    var pa = fs.readdirSync(path);
+    var dirs=[];
+
+	pa.forEach(function(name,index){
+		var info = fs.statSync(path+"/"+name)	
+		if(info.isDirectory()){
+            dirs.push(name)
+		}	
+    })
+    return dirs;
+}
+
 var CONFIG_ = 'Release'
 if(process.env.NODE_ENV){
     var c = process.env.NODE_ENV.replace(/(^\s*)|(\s*$)/g, "").toUpperCase()
@@ -13,11 +25,8 @@ if(process.env.NODE_ENV){
 }
 
 
-const MODULE_LIST =[
-    'hello',
-    'class_','fn','value_object','em_asm','em_js','val','vector','map_',
-    'enum_', 'constants', 'unique_ptr'
-    ];
+const MODULE_LIST = findAddons(__dirname)
+console.log(MODULE_LIST)
 var exports={
     IS_DEBUG: CONFIG_=='Debug' ? true : false,
     MODULE_LIST
