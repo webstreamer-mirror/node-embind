@@ -89,12 +89,12 @@ while true ; do
     esac
 done
 
-if [ "$_rebuild$_build$_configure" == "" ];
+if [ "$_rebuild$_build$_configure" == "" ]; then
   _configure=Yes
   _rebuild=Yes
 fi
 
-if [ "$1" == "" ]; then
+if [ "$_project" == "" ]; then
   BuildAll 
 else
   BuildOne $_dirname/$_project
