@@ -50,7 +50,7 @@ EMSCRIPTEN_BINDINGS(binding)
 }
 
 
-#ifdef NODE_EMBIND_EMSCRIPTEN_INITIALIZE
-   NODE_EMBIND_EMSCRIPTEN_INITIALIZE
+#ifdef EMSCRIPTEN_NODE_EMBIND
+#include <emscripten/node-embind>
 #endif
 

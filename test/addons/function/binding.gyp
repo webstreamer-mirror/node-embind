@@ -9,7 +9,7 @@
       
       "libraries": [],
       
-      "sources": ["binding.cpp","_embind.cpp" ],
+      "sources": ["binding.cpp"],
       
       "conditions": [
           [

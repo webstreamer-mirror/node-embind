@@ -15,8 +15,9 @@
 #include <emscripten/wire.h>
 #include <stdio.h>
 
-
 #include <tuple>
+
+#define EMSCRIPTEN_NODE_EMBIND
 
 namespace emscripten {
 
@@ -27,7 +28,7 @@ namespace emscripten {
 	}
 }
 
-#include "n-api/n-napi.h"
+#include <emscripten/n-api/n-napi.h>
 
 namespace emscripten {
 	////////////////////////////////////////////////////////////////////////////////
@@ -89,17 +90,20 @@ namespace emscripten {
 		template<typename ReturnType, typename... Args>
 		struct Invoker {
 			typedef ReturnType(*Fn)(Args...);
+			
 			typedef napi::Invoker<ReturnType, Args...> I;
 
-			static napi_value invoke(const function_t* self, const napi_context_t& ctx)
+			static napi_value invoke(
+				const napi::function_t* self, 
+				const napi::context_t& ctx)
 			{
 				if (self->argc == ctx.argc) {
-					return napi::value<ReturnType>(ctx.env).napi_cast(
-						I::invoke(ctx.env, ctx.argv, (Fn)self->function/*static_cast<Fn>(self->function)*/)
-					);
+				//	return napi::value<ReturnType>(ctx.env).napi_cast(
+				//		I::invoke(ctx.env, ctx.argv, (Fn)self->function/*static_cast<Fn>(self->function)*/)
+				//	);
 				}
 
-				function_t* fn = self->next;
+				napi::function_t* fn = self->next;
 				while (fn) {
 					if (fn->argc == ctx.argc) {
 						return fn->invoke(fn, ctx);
@@ -119,7 +123,7 @@ namespace emscripten {
 			typedef void(*Fn)(Args...);
 			typedef napi::Invoker<void, Args...> I;
 
-			static napi_value invoke(const function_t* self, const napi_context_t& ctx)
+			static napi_value invoke(const napi::function_t* self, const napi::context_t& ctx)
 			{
 				if (self->argc == sizeof...(Args)) {
 					I::invoke(ctx.env, ctx.argv, (Fn)self->function/*static_cast<Fn>(self->function)*/);
@@ -149,14 +153,14 @@ namespace emscripten {
 	void function(const char* name, ReturnType(*fn)(Args...), Policies...) {
 
 		using namespace internal;
+
 		typename WithPolicies<Policies...>::template ArgTypeList<ReturnType, Args...> args;
 		auto invoker = &Invoker<ReturnType, Args...>::invoke;
 
-		_embind::register_function(
+		napi::_embind::register_function(
 			name,
 			args.getCount(),
 			args.getTypes(),
-			getSignature(invoker),
 			reinterpret_cast<GenericFunction>(invoker),
 			reinterpret_cast<GenericFunction>(fn));
 

@@ -1,0 +1,8 @@
+
+#ifdef _IN_EMSCRIPTEN_NODE_EMBIND_FILE_
+#error duplicated include <emscripten/node-embind>
+#endif
+
+#define _IN_EMSCRIPTEN_NODE_EMBIND_FILE_
+#include <emscripten/n-api/module.cpp>
+#undef _IN_EMSCRIPTEN_NODE_EMBIND_FILE_

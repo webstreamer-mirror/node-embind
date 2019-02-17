@@ -1,16 +1,20 @@
 
-#pragma once
 
-#include "common.h"
-#include "function.h"
-#include "property.h"
+#ifndef _NODE_EMBIND_EMSCRIPTEN_NAPI_CLASS_H_
+#define _NODE_EMBIND_EMSCRIPTEN_NAPI_CLASS_H_
+
+#include <emscripten/n-api/common.h>
+#include <emscripten/n-api/function.h>
+#include <emscripten/n-api/property.h>
+
 namespace emscripten {
 	namespace internal {
+		namespace napi{
 
 		struct constructor_t {
 			size_t argc;
 			void* function; // C++ function
-			class_ptr (*invoke)(const constructor_t*, const napi_context_t&);
+			class_ptr(*invoke)(const constructor_t*, const context_t&);
 
 			constructor_t()
 				:argc(0), function(nullptr), invoke(nullptr)
@@ -33,7 +37,7 @@ namespace emscripten {
 		{
 			std::vector<napi_property_descriptor> prop;
 			napi_value ctor = nullptr;
-			
+
 			for (std::list<property_t*>::iterator it = prototype->property.begin();
 				it != prototype->property.end(); it++) {
 
@@ -64,7 +68,7 @@ namespace emscripten {
 			napi_set_named_property(env, exports, prototype->name, ctor);
 		}
 
-		
+
 
 		// ========================================
 		//   Class
@@ -76,7 +80,7 @@ namespace emscripten {
 			ClassType* instance;
 			napi_ref   ref;
 
-			static ClassType* Constructor(const napi_context_t& ctx, const std::list<constructor_t*>& ctors)
+			static ClassType* Constructor(const context_t& ctx, const std::list<constructor_t*>& ctors)
 			{
 				//ClassType* inst = nullptr;
 				for (std::list<constructor_t*>::const_iterator it = ctors.cbegin();
@@ -130,7 +134,7 @@ namespace emscripten {
 					}
 				}
 
-				
+
 
 				class_t* prototype = static_cast<class_t*>(ctx.data);
 				Class<ClassType>* obj = new Class<ClassType>();
@@ -140,9 +144,9 @@ namespace emscripten {
 				else {
 					obj->instance = Constructor(ctx, prototype->ctors);
 				}
-			
+
 				napi_wrap(env, ctx.js, obj, &Destructor, nullptr, &obj->ref);
-			
+
 				return ctx.js;
 			}
 
@@ -174,6 +178,9 @@ namespace emscripten {
 
 		};
 
-
+		}
 	}
 }
+
+
+#endif //!_NODE_EMBIND_EMSCRIPTEN_NAPI_CLASS_H_

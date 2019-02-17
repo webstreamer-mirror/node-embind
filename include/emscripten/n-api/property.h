@@ -3,8 +3,7 @@
 
 #include "common.h"
 
-namespace emscripten {
-	namespace internal {
+NS_NAPI_BEGIN
 
 		struct property_t {
 			property_t()
@@ -13,19 +12,19 @@ namespace emscripten {
 				, attributes(napi_default)
 			{}
 			const char* name;
-			napi_value(*getter)(const property_t*, const napi_context_t&);
-			napi_value(*setter)(const property_t*, const napi_context_t&);
+			napi_value(*getter)(const property_t*, const context_t&);
+			napi_value(*setter)(const property_t*, const context_t&);
 			void* setter_context;
 			void* getter_context;
 			napi_property_attributes attributes;
 		};
 
 		inline static napi_value napi_setter(napi_env env, napi_callback_info info) {
-			napi_context_t ctx;
+			context_t ctx;
 			ctx.env = env;
 			ctx.argv = nullptr;
 			
-			auto scope = NodeJS::Scope(env);
+			//auto scope = NodeJS::Scope(env);
 
 			napi_get_cb_info(env, info, &ctx.argc, nullptr, &ctx.js, &ctx.data);
 			if (ctx.argc > 0)
@@ -39,10 +38,10 @@ namespace emscripten {
 		}
 
 		inline static napi_value napi_getter(napi_env env, napi_callback_info info) {
-			napi_context_t ctx;
+			context_t ctx;
 			ctx.env = env;
 			ctx.argv = nullptr;
-			auto scope = NodeJS::Scope(env);
+			//auto scope = NodeJS::Scope(env);
 
 			napi_get_cb_info(env, info, &ctx.argc, nullptr, &ctx.js, &ctx.data);
 			if (ctx.argc > 0)
@@ -55,7 +54,6 @@ namespace emscripten {
 			return self->getter(self,ctx);
 		}
 
-	}
-}
+NS_NAPI_END
 
 #endif // !_NODE_EMBIND_EMSCRIPTEN_NAPI_PROPERTY_H_
