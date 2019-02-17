@@ -1,7 +1,6 @@
 #!/bin/sh
-basedir=$(dirname "$(echo "$0" | sed -e 's,\\,/,g')")
 
-_dirname=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+_dirname=$( cd $( dirname ${BASH_SOURCE[0]} ) && pwd )
 
 _PYTHON2=
 _DEBUG=
@@ -11,6 +10,10 @@ _ERROR=
 [ ! -z "$PYTHON" ] && _PYTHON2="--python $PYTHON"
 
 
+set _configure=
+set _build=
+set _rebuild=
+set _project=
 
 function BuildOne(){
 
@@ -43,9 +46,56 @@ function BuildAll(){
 
 }
 
+#------------------------------------
+#   Main
+#-----------------------------------
+
+_HELP='
+Usage: build [--build, --rebuild, --configure ] [project]
+       only do configure for hello project : build --configure hello
+       do build for all project in addons  : build --build
+'
+while true ; do
+    case "$1" in
+      --configure) 
+        _configure=Yes; shift 1;
+      ;;
+
+      --build) 
+        _build=Yes; shift 1;
+      ;;
+      
+      --rebuild) 
+        _rebuild=Yes; shift 1;
+      ;;
+      
+      --help) 
+        echo $_HELP;
+        exit/b 0
+      ;;
+
+
+      -*)
+        echo "invlid options : $1"
+        echo "use docker-run --help"
+        echo $_HELP
+        exit/b 1
+      ;;
+
+      *)
+        _project=$1
+        break 
+      ;;
+    esac
+done
+
+if [ "$_rebuild$_build$_configure" == "" ];
+  _configure=Yes
+  _rebuild=Yes
+fi
 
 if [ "$1" == "" ]; then
   BuildAll 
 else
-  BuildOne
+  BuildOne $_dirname/$_project
 fi
