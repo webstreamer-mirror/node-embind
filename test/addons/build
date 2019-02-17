@@ -10,10 +10,10 @@ _ERROR=
 [ ! -z "$PYTHON" ] && _PYTHON2="--python $PYTHON"
 
 
-set _configure=
-set _build=
-set _rebuild=
-set _project=
+_configure=
+_build=
+_rebuild=
+_project=
 
 function BuildOne(){
 
@@ -97,5 +97,7 @@ fi
 if [ "$_project" == "" ]; then
   BuildAll 
 else
+  echo addon $_dirname/$_project
+
   BuildOne $_dirname/$_project
 fi
