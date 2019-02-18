@@ -5,9 +5,10 @@
   "main": "index.js",
   "scripts": {
     "build": "node node_modules/npmcs/bin build",
+    "build:debug": "node node_modules/npmcs/bin build_debug",
     "test": "npx mocha ./test/*.test.js",
     "test:report": "npx mocha ./test/*.test.js  -R spec",
-    "test:debug": "npx env-cmd ./config/debug.env npx mocha ./test/*.test.js",
+    "test:debug": "npx npmcs test_debug",
     "test:debug:report": "npx env-cmd ./debug.env npx mocha ./test/*.test.js -R spec"
   },
   "repository": {

@@ -24,7 +24,7 @@ function BuildOne(){
    return 1
  fi
  
- npx node-gyp rebuild -C $addon_dir
+ npx node-gyp rebuild -C $addon_dir $_DEBUG
  if [ $? != 0 ]; then
    _ERROR= "build failed ($addon_dir) !"
    return 1
