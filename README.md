@@ -21,7 +21,9 @@ sudo apt-get install  python-pip
 wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.34.0/install.sh | bash
 
 # reset your bash
-nvm install 10
-nvm use 10
+nvm install v10.15.1
+nvm use v10.15.1
+npm install -g node-gyp
+
 
 ```
