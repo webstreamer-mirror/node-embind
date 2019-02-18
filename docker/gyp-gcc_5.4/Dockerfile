@@ -24,7 +24,6 @@ RUN dpkg --add-architecture i386 \
     && echo deb-src http://mirrors.aliyun.com/ubuntu/ xenial-security main restricted multiverse universe >> /etc/apt/sources.list \
     && echo deb http://mirrors.aliyun.com/ubuntu/ xenial-security universe >> /etc/apt/sources.list \
     && echo deb http://mirrors.aliyun.com/ubuntu/ xenial-security multiverse >> /etc/apt/sources.list \
-    && echo "# end"
     && apt-get update \
     && apt-get upgrade \
     && apt-get -qq install -y --no-install-recommends \
@@ -72,11 +71,9 @@ RUN dpkg --add-architecture i386 \
        && PYTHON_CONFIGURE_OPTS="--enable-shared" pyenv install 2.7.15 \
        && pyenv global 2.7.15 \
        && chown -R ci:1001 /opt/pyenv \
-       && find /opt/pyenv -iname __pycache__ -print0 | xargs -0 rm -rf \
+       && find /opt/pyenv -iname __pycache__ -print0 | xargs -0 rm -rf\
        && update-alternatives --install /usr/bin/python python /opt/pyenv/shims/python 100 \
-       && update-alternatives --install /usr/bin/python3 python3 /opt/pyenv/shims/python3 100 \
-       && update-alternatives --install /usr/bin/pip pip /opt/pyenv/shims/pip 100 \
-       && update-alternatives --install /usr/bin/pip3 pip3 /opt/pyenv/shims/pip3 100 
+       && update-alternatives --install /usr/bin/pip pip /opt/pyenv/shims/pip 100 
        
 USER ci
 WORKDIR /home/ci
