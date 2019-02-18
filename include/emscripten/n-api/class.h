@@ -107,7 +107,7 @@ namespace emscripten {
 
 			static napi_value New(napi_env env, napi_callback_info info)
 			{
-				NodeJS::Scope scope = NodeJS::Scope(env);
+				//NodeJS::Scope scope = NodeJS::Scope(env);
 				napi_status status;
 
 				napi_value target;
