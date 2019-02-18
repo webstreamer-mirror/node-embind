@@ -1,0 +1,103 @@
+#!/bin/sh
+
+_dirname=$( cd $( dirname ${BASH_SOURCE[0]} ) && pwd )
+
+_PYTHON2=
+_DEBUG=
+_ERROR=
+
+[ "$NODE_ENV" == Debug ] && _DEBUG=--debug 
+[ ! -z "$PYTHON" ] && _PYTHON2="--python $PYTHON"
+
+
+_configure=
+_build=
+_rebuild=
+_project=
+
+function BuildOne(){
+
+ local addon_dir=$1
+ npx node-gyp configure -C $addon_dir $_DEBUG $_PYTHON2
+ if [ $? != 0 ]; then
+   _ERROR= "configure failed ($addon_dir) !"
+   return 1
+ fi
+ 
+ npx node-gyp rebuild -C $addon_dir
+ if [ $? != 0 ]; then
+   _ERROR= "build failed ($addon_dir) !"
+   return 1
+ fi
+ 
+}
+
+function BuildAll(){
+
+  for i in $(find $_dirname -mindepth 1 -maxdepth 1  -type d)
+  do
+
+    if [ -f $i/binding.gyp ]; then
+       BuildOne $i
+    else
+      echo skip $i as no binding.gyp
+    fi
+  done
+
+}
+
+#------------------------------------
+#   Main
+#-----------------------------------
+
+_HELP='
+Usage: build [--build, --rebuild, --configure ] [project]
+       only do configure for hello project : build --configure hello
+       do build for all project in addons  : build --build
+'
+while true ; do
+    case "$1" in
+      --configure) 
+        _configure=Yes; shift 1;
+      ;;
+
+      --build) 
+        _build=Yes; shift 1;
+      ;;
+      
+      --rebuild) 
+        _rebuild=Yes; shift 1;
+      ;;
+      
+      --help) 
+        echo $_HELP;
+        exit/b 0
+      ;;
+
+
+      -*)
+        echo "invlid options : $1"
+        echo "use docker-run --help"
+        echo $_HELP
+        exit/b 1
+      ;;
+
+      *)
+        _project=$1
+        break 
+      ;;
+    esac
+done
+
+if [ "$_rebuild$_build$_configure" == "" ]; then
+  _configure=Yes
+  _rebuild=Yes
+fi
+
+if [ "$_project" == "" ]; then
+  BuildAll 
+else
+  echo addon $_dirname/$_project
+
+  BuildOne $_dirname/$_project
+fi
