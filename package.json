@@ -4,6 +4,7 @@
   "description": "Emscripten embind for Node.JS addon",
   "main": "index.js",
   "scripts": {
+    "build": "node node_modules/npmcs/bin build",
     "test": "npx mocha ./test/*.test.js",
     "test:report": "npx mocha ./test/*.test.js  -R spec",
     "test:debug": "npx env-cmd ./config/debug.env npx mocha ./test/*.test.js",
@@ -27,10 +28,11 @@
     "node-gyp": "^3.8.0"
   },
   "devDependencies": {
-    "chalk": "^2.4.2",
     "chai": "^4.2.0",
+    "chalk": "^2.4.2",
     "commander": "^2.19.0",
     "env-cmd": "^8.0.2",
-    "mocha": "^5.2.0"
+    "mocha": "^5.2.0",
+    "npmcs": "^1.4.2"
   }
 }
