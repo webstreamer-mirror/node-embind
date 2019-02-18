@@ -5,8 +5,8 @@ set _dirname=%~dp0
 set _PYTHON2=c:/python27
 set _DEBUG=
 set _ERROR=
-if "%NODE_ENV%" EQU Debug  set _DEBUG=--debug 
-
+if "%NODE_ENV%"=="Debug"  set _DEBUG=--debug 
+echo "@%_DEBUG%#%NODE_ENV%">type.txt
 if defined PYTHON set _PYTHON2=%PYTHON%
 
 set _configure=
@@ -75,7 +75,7 @@ set addon_dir=%1
 
 if "%_configure%" == "Yes" (
 
-  call npx node-gyp configure -C %addon_dir% --python %_PYTHON2%
+  call npx node-gyp configure -C %addon_dir% --python %_PYTHON2% %_DEBUG%
   
   if %errorlevel% NEQ 0 (
     echo "configure failed (%addon_dir%)"
@@ -85,7 +85,7 @@ if "%_configure%" == "Yes" (
 
 if "%_build%" == "Yes" (
 
-  call npx node-gyp build -C %addon_dir% --python %_PYTHON2%
+  call npx node-gyp build -C %addon_dir% --python %_PYTHON2% %_DEBUG%
   if %errorlevel% NEQ 0 (
     echo  "build failed (%addon_dir%)"
     goto :_EXIT
@@ -94,7 +94,7 @@ if "%_build%" == "Yes" (
 
 if "%_rebuild%" == "Yes" (
 
-  call npx node-gyp rebuild -C %addon_dir% --python %_PYTHON2%
+  call npx node-gyp rebuild -C %addon_dir% --python %_PYTHON2% %_DEBUG%
   if %errorlevel% NEQ 0 (
     echo "rebuild failed (%addon_dir%)"
     goto :_EXIT
