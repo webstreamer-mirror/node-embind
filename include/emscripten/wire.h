@@ -219,30 +219,6 @@ namespace emscripten {
 				}
 			};
 		};
-
-		template<typename ElementType>
-		struct memory_view {
-			memory_view() = delete;
-			explicit memory_view(size_t size, const ElementType* data)
-				: size(size)
-				, data(data)
-			{}
-
-			const size_t size; // in elements, not bytes
-			const void* const data;
-		};
-
-		// Note that 'data' is marked const just so it can accept both
-		// const and nonconst pointers.  It is certainly possible for
-		// JavaScript to modify the C heap through the typed array given,
-		// as it merely aliases the C heap.
-		template<typename T>
-		inline memory_view<T> typed_memory_view(size_t size, const T* data) {
-			static_assert(internal::typeSupportsMemoryView<T>(),
-				"type of typed_memory_view is invalid");
-			return memory_view<T>(size, data);
-		}
-
 	}
 
 }
