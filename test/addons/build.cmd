@@ -57,7 +57,7 @@ if "%_configure%%_rebuild%%_build%" EQU "" (
 if "%_project%" EQU "" (
   call :_buildAll
 ) else (
-  call :_buildOne %_dirname%%_project%
+  call :_buildOne %_dirname%%_project% %_project%
 )
 
 
