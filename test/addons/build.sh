@@ -6,6 +6,7 @@ _PYTHON2=
 _DEBUG=
 _ERROR=
 _CONFIG=Release
+
 [ "$NODE_ENV" == Debug ] && _DEBUG=--debug && _CONFIG=Debug
 [ ! -z "$PYTHON" ] && _PYTHON2="--python $PYTHON"
 
