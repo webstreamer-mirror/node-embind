@@ -5,7 +5,7 @@ module.exports = {
         */
 		win: {
 
-			build: 'test\\addons\\build.cmd',
+			build: 'cmd/c test\\addons\\build.cmd',
 			build_debug: 'SET NODE_ENV=Debug&& test\\addons\\build.cmd',
 			build_release: 'SET NODE_ENV=Release&& test\\addons\\build.cmd',
 

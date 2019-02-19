@@ -86,6 +86,7 @@ if "%_configure%" == "Yes" (
 if "%_build%" == "Yes" (
 
   call npx node-gyp build -C %addon_dir% --python %_PYTHON2% %_DEBUG%
+
   if %errorlevel% NEQ 0 (
     echo  "build failed (%addon_dir%)"
     goto :_EXIT
@@ -94,7 +95,8 @@ if "%_build%" == "Yes" (
 
 if "%_rebuild%" == "Yes" (
 
-  call npx node-gyp rebuild -C %addon_dir% --python %_PYTHON2% %_DEBUG%
+  node-gyp rebuild -C %addon_dir% --python %_PYTHON2% %_DEBUG%
+    echo "@%errorlevel%@@@@@@@@@@@@@@@@@@""
   if %errorlevel% NEQ 0 (
     echo "rebuild failed (%addon_dir%)"
     goto :_EXIT
