@@ -2,7 +2,7 @@
 pushd
 
 set _dirname=%~dp0
-set _PYTHON2=c:/python27
+set _PYTHON2=c:/Python27
 set _DEBUG=
 set _ERROR=
 set _ERRORNO=0
@@ -122,12 +122,12 @@ goto :eof
     
   if exist %folder%\build\*.sln del /Q %folder%\build\*.sln
   
-  call npx node-gyp configure -C %addon_dir% --python %_PYTHON2% %_DEBUG%
+  call npx node-gyp configure -C %folder% --python %_PYTHON2% %_DEBUG%
   
   if exist %folder%\build\*.sln goto :eof
  
   ::error
-  echo "configure failed (%addon_dir%)"
+  echo "configure failed (%folder%)"
   set _ERRORNO=10
   goto :_EXIT
 
