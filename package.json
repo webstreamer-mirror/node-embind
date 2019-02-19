@@ -1,0 +1,36 @@
+{
+  "name": "node-embind",
+  "version": "0.1.0",
+  "description": "Emscripten embind for Node.JS addon",
+  "main": "index.js",
+  "scripts": {
+    "build": "node node_modules/npmcs/bin build",
+    "test": "npx mocha ./test/*.test.js",
+    "docker:pull": "sudo docker pull webstreamer/node-gyp-gcc54",
+    "docker:build": "bash ./docker.sh 'npm install && bash ./test/addons/build.sh >build.log 2>&1'",
+    "docker:build.log": "bash ./docker.sh 'npm install && bash ./test/addons/build.sh'",
+    "docker:test": "bash ./docker.sh 'npm install && npm test'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/webstreamer/node-embind"
+  },
+  "keywords": [
+    "embind",
+    "N-API"
+  ],
+  "author": "Mingyi Zhang",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/webstreamer/node-embind"
+  },
+  "homepage": "https://github.com/webstreamer/node-embind#readme",
+  "dependencies": {
+    "node-gyp": "^3.8.0"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^5.2.0",
+    "npmcs": "^1.4.2"
+  }
+}
