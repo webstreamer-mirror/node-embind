@@ -38,7 +38,7 @@ npm install -g node-gyp
 
 _China user can accelerate by taobao mirror :_ 
 ```sh 
-  npm --registry=https://registry.npm.taobao.org
+  npm install --registry=https://registry.npm.taobao.org
   
 ```
 
@@ -46,7 +46,7 @@ if you want to see more detail about build, you can see the build.log, or use sh
 
 Windows
 ```sh
-   test\addons\build.cmd
+  test\addons\build.cmd
 ```
 Linux
 ```sh
@@ -57,10 +57,18 @@ Linux
 You can also use docker to build Linux version
 
 ```sh
-   npm docker:pull # pull docker images
-   npm docker:build
-   npm docker:test
+  npm docker:pull # pull docker images
+  npm docker:build
+  npm docker:test
 ```
 if you want to see the build details in console, use npm docker:build.log
 
 Use enviroment NODE_ENV to select Debug (NODE_ENV=Debug) or Release version.
+
+In case you didn't install node in host, you can directly use shell.
+
+```sh
+  bash ./docker.sh 'npm install'
+  bash ./docker.sh 'bash ./test/addons/build.sh'
+  bash ./docker.sh 'npm run test'
+```
