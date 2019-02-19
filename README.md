@@ -38,4 +38,22 @@ npm install -g node-gyp
 
 _China user can accelerate by taobao mirror :_ ``` npm install  --registry=https://registry.npm.taobao.org```
 
-if you want to see more detail about build, you can see the build.log, or use comamnd build in [test/addons/build](!./test/addons/build)
+if you want to see more detail about build, you can see the build.log, or use shell comamnd build.
+
+Windows
+```sh
+   test\addons\build.cmd
+```
+Linux
+```sh
+  bash ./test/addons/build.sh
+```
+
+
+You can also use docker to build Linux version
+
+```sh
+   npm docker:pull # pull docker images
+   npm docker:build
+   npm docker:test
+```

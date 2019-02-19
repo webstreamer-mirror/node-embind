@@ -7,8 +7,8 @@
     "build": "node node_modules/npmcs/bin build",
     "test": "npx mocha ./test/*.test.js",
     "docker:pull": "sudo docker pull webstreamer/node-gyp-gcc54",
-    "docker:build": "bash ./docker.sh 'node --version &&npm --version && npm install && ls ./test/addons/build'",
-    "docker:test": "./docker.sh 'npm install && npm test'"
+    "docker:build": "bash ./docker.sh 'npm install && bash ./test/addons/build.sh'",
+    "docker:test": "bash ./docker.sh 'npm install && npm test'"
   },
   "repository": {
     "type": "git",

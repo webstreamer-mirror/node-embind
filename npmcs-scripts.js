@@ -11,8 +11,7 @@ module.exports = {
             Unix scripts, run on a unix environment
         */
 		nix: {
-			build: 'bash test/addons/build >build.log 2>&1',
-			build_docker: 'sudo -E docker run --rm -v $PWD:/home/ci/project webstreamer/node-gyp-gcc54 bash -c "source /opt/nvm/nvm.sh && cd project"'  
+			build: 'bash test/addons/build.sh >build.log 2>&1'
 		},
 		/* 
 			Additionally add different commands for osx: (note that if running npmcs

@@ -1,4 +1,5 @@
 #!/bin/sh
 
-sudo -E docker run --env NODE_ENV=$NODE_ENV --rm -v $PWD:/home/ci/project webstreamer/node-gyp-gcc54 \
+_dirname=$( cd $( dirname ${BASH_SOURCE[0]} ) && pwd )
+sudo -E docker run --env NODE_ENV=$NODE_ENV --rm -v $_dirname:/home/ci/project webstreamer/node-gyp-gcc54 \
   bash -c " source /opt/nvm/nvm.sh && cd project && $1"
