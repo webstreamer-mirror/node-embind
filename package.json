@@ -4,13 +4,8 @@
   "description": "Emscripten embind for Node.JS addon",
   "main": "index.js",
   "scripts": {
-    "build": "node node_modules/npmcs/bin build",
-    "build:debug": "node node_modules/npmcs/bin build_debug",
-    "build:release": "node node_modules/npmcs/bin build_release",
-
-    "test": "npx mocha ./test/*.test.js",
-    "test:debug": "cross-env NODE_ENV=Debug && npx mocha ./test/*.test.js  -R spec",
-    "test:release": "cross-env NODE_ENV=Release && npx mocha ./test/*.test.js  -R spec"
+    "build": "npx npmcs build",
+    "test": "npx mocha ./test/*.test.js"
 
   },
   "repository": {

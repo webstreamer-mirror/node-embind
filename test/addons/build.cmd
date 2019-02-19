@@ -5,8 +5,13 @@ set _dirname=%~dp0
 set _PYTHON2=c:/python27
 set _DEBUG=
 set _ERROR=
-if "%NODE_ENV%"=="Debug"  set _DEBUG=--debug 
-echo "@%_DEBUG%#%NODE_ENV%">type.txt
+set _ERRORNO=0
+set _BuildFolder=Release
+if "%NODE_ENV%"=="Debug"  (
+  set _DEBUG=--debug 
+  set _BuildFolder=Debug
+)  
+
 if defined PYTHON set _PYTHON2=%PYTHON%
 
 set _configure=
@@ -46,71 +51,47 @@ if "%_configure%%_rebuild%%_build%" EQU "" (
 )
 
 
-
-REM echo _configure=%_configure%
-REM echo _build=%_build%
-REM echo _rebuild=%_rebuild%
-REM echo _project=%_project%
-
-set errorlevel=0
+::========================================
+::  Main
+::========================================
 if "%_project%" EQU "" (
-  call :BuildAll
+  call :_buildAll
 ) else (
-  call :BuildOne %_dirname%%_project%
+  call :_buildOne %_dirname%%_project%
 )
 
 
+::---------------------------------------
+::            End of Script
+::---------------------------------------
 :_EXIT
 popd
-if defined _ERROR echo "%_ERROR%"
+
+exit/b %_ERRORNO%
+
 goto :eof
 
-::--------------------------------------------------------
-::-- Function section starts below here
-::--------------------------------------------------------
+::---------------------------------------
+::            BuildOne
+::---------------------------------------
 
-:BuildOne    - build addon
+:_buildOne    - build addon
 
-set addon_dir=%1
+call :_doConfigure %1 %2
 
-if "%_configure%" == "Yes" (
+call :_doBuild %1 %2
 
-  call npx node-gyp configure -C %addon_dir% --python %_PYTHON2% %_DEBUG%
-  
-  if %errorlevel% NEQ 0 (
-    echo "configure failed (%addon_dir%)"
-    goto :_EXIT
-  )
-)
+goto :eof
 
-if "%_build%" == "Yes" (
 
-  call npx node-gyp build -C %addon_dir% --python %_PYTHON2% %_DEBUG%
-
-  if %errorlevel% NEQ 0 (
-    echo  "build failed (%addon_dir%)"
-    goto :_EXIT
-  )
-)
-
-if "%_rebuild%" == "Yes" (
-
-  node-gyp rebuild -C %addon_dir% --python %_PYTHON2% %_DEBUG%
-    echo "@%errorlevel%@@@@@@@@@@@@@@@@@@""
-  if %errorlevel% NEQ 0 (
-    echo "rebuild failed (%addon_dir%)"
-    goto :_EXIT
-  )
-)
-
-goto:eof
-
-:BuildAll - build all addon folders
-
+::---------------------------------------
+::            buildAll
+::---------------------------------------
+:_buildAll - build all addon folders
 
 for /f "delims=" %%c in ('dir /D /b "%_dirname%"') do (  
   if exist %_dirname%\%%c\binding.gyp (
-     call :BuildOne %_dirname%\%%c
+     call :_buildOne %_dirname%\%%c %%c
   ) 
 )
 
@@ -124,3 +105,63 @@ goto :eof
 
 goto :eof
 
+
+
+
+::  ---------------------------------------
+::              Configure
+::  ---------------------------------------
+:_doConfigure
+
+  set folder=%1
+  set name=%2
+  
+  if "%_configure%"=="" goto :eof
+   
+  echo [%name%] configure
+    
+  if exist %folder%\build\*.sln del /Q %folder%\build\*.sln
+  
+  call npx node-gyp configure -C %addon_dir% --python %_PYTHON2% %_DEBUG%
+  
+  if exist %folder%\build\*.sln goto :eof
+ 
+  ::error
+  echo "configure failed (%addon_dir%)"
+  set _ERRORNO=10
+  goto :_EXIT
+
+goto :eof
+
+
+::---------------------------------------
+::            Build
+::---------------------------------------
+:_doBuild
+  set folder=%1
+  set name=%2
+  set subcommand=
+
+  if "%_build%"   == "Yes" set subcommand=build
+  if "%_rebuild%" == "Yes" set subcommand=rebuild
+ 
+  if "%subcommand%"=="" goto :eof
+ 
+  echo [%name%] %subcommand%
+
+  set outd=%folder%\build\%_BuildFolder%
+ 
+  if exist %outd%\*.node del/Q %outd%\*.node
+ 
+  call npx node-gyp %subcommand% -C %folder% --python %_PYTHON2% %_DEBUG%
+ 
+  if exist %outd%\*.node goto :eof
+  echo  %outd%\*.node
+ 
+  :: error
+ 
+  echo "%subcommand% failed (%addon_dir%)"
+  set _ERRORNO=11
+  goto :_EXIT
+
+goto :eof
