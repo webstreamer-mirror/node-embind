@@ -11,14 +11,13 @@
 #include <vector>
 #include <map>
 #include <type_traits>
-#include <emscripten/val.h>
-#include <emscripten/wire.h>
 #include <stdio.h>
 
 #include <tuple>
 
 #define EMSCRIPTEN_NODE_EMBIND
 
+#include <emscripten/wire.h>
 namespace emscripten {
 
 	namespace internal {
@@ -157,7 +156,7 @@ namespace emscripten {
 		typename WithPolicies<Policies...>::template ArgTypeList<ReturnType, Args...> args;
 		auto invoker = &Invoker<ReturnType, Args...>::invoke;
 
-		napi::_embind::register_function(
+		napi::register_function(
 			name,
 			args.getCount(),
 			args.getTypes(),
@@ -168,5 +167,10 @@ namespace emscripten {
 
 }
 
+#define EMSCRIPTEN_BINDINGS(name)                                       \
+    static struct EmscriptenBindingInitializer_##name {                 \
+        EmscriptenBindingInitializer_##name();                          \
+    } EmscriptenBindingInitializer_##name##_instance;                   \
+    EmscriptenBindingInitializer_##name::EmscriptenBindingInitializer_##name()
 
 #endif // !_NODE_EMBIND_EMSCRIPTEN_BIND_H_

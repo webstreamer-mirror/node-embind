@@ -13,6 +13,31 @@ module_t Module::module_;
 napi_env VM::env_ = nullptr;
 
 
+
+//====================================
+//       Registers
+//====================================
+
+void register_function(
+	const char* name,
+	unsigned argCount,
+	const TYPEID argTypes[],
+	GenericFunction invoker,
+	GenericFunction function)
+{
+	module_t& m = Module::module_;
+	function_t* f = new function_t();
+	f->name = name;
+	f->argc = argCount - 1;
+	typedef napi_value(*Fn)(const function_t*, const context_t&);
+
+	f->invoke = (Fn)invoker;
+
+	f->function = function;
+	m.functions.push_back(f);
+}
+
+
 NS_NAPI_END
 
 
