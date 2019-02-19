@@ -5,8 +5,8 @@ _dirname=$( cd $( dirname ${BASH_SOURCE[0]} ) && pwd )
 _PYTHON2=
 _DEBUG=
 _ERROR=
-
-[ "$NODE_ENV" == Debug ] && _DEBUG=--debug 
+_CONFIG=Release
+[ "$NODE_ENV" == Debug ] && _DEBUG=--debug && _CONFIG=Debug
 [ ! -z "$PYTHON" ] && _PYTHON2="--python $PYTHON"
 
 
@@ -14,22 +14,58 @@ _configure=
 _build=
 _rebuild=
 _project=
+_errorno=0
+
+function _doConfigure(){
+ local folder=$1 
+ local name=$(basename $folder)
+
+ [ -z $_configure ] && return 0;
+
+ echo "[$name] configure"
+
+ [ -f $folder/build/Makefile ] && rm -f $folder/build/Makefile
+
+ npx node-gyp configure -C $folder $_DEBUG $_PYTHON2
+
+ if [ ! -f $folder/build/Makefile ]; then
+   echo "[$name] configure failed."
+   _errorno=10;
+ fi
+ return $_errorno
+}
+
+function _doBuild(){
+
+  local folder=$1
+  local name=$(basename $folder)
+  local subcommand=
+
+
+  [ -n $_build ] && subcommand=build
+  [ -n $_rebuild ] && subcommand=rebuild
+
+  [ -z $subcommand ] && return 0;
+
+  echo "[$name] $subcommand"
+
+  local addon=$folder/build/$_CONFIG/{$name}.node
+
+  [ -f  $addon ] && rm -rf $addon
+
+  npx node-gyp rebuild -C $folder $_DEBUG
+
+  if [ ! -f $addn ]; then
+     echo "[$name] $subcommand failed."
+     _errorno=11;
+  fi
+  return $_errorno
+}
 
 function BuildOne(){
 
- local addon_dir=$1
- npx node-gyp configure -C $addon_dir $_DEBUG $_PYTHON2
- if [ $? != 0 ]; then
-   _ERROR= "configure failed ($addon_dir) !"
-   return 1
- fi
- 
- npx node-gyp rebuild -C $addon_dir $_DEBUG
- if [ $? != 0 ]; then
-   _ERROR= "build failed ($addon_dir) !"
-   return 1
- fi
- 
+  _doConfigure $1 &&  _doBuild $1
+
 }
 
 function BuildAll(){
@@ -38,15 +74,13 @@ function BuildAll(){
   do
 
     if [ -f $i/binding.gyp ]; then
-       BuildOne $i
-    else
-      echo skip $i as no binding.gyp
+        BuildOne $i
+        [ $_errorno -ne 0 ] && return ;
     fi
   done
-
 }
 
-#------------------------------------
+#-----------------------------------
 #   Main
 #-----------------------------------
 
@@ -97,7 +131,7 @@ fi
 if [ "$_project" == "" ]; then
   BuildAll 
 else
-  echo addon $_dirname/$_project
 
   BuildOne $_dirname/$_project
 fi
+exit $_errorno

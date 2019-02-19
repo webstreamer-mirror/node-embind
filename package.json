@@ -4,9 +4,8 @@
   "description": "Emscripten embind for Node.JS addon",
   "main": "index.js",
   "scripts": {
-    "build": "npx npmcs build",
+    "build": "node node_modules/npmcs/bin build",
     "test": "npx mocha ./test/*.test.js"
-
   },
   "repository": {
     "type": "git",

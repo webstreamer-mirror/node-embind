@@ -27,3 +27,15 @@ npm install -g node-gyp
 
 
 ```
+
+# How to build
+
+```sh
+  npm install
+  npm run build
+  npm test
+```
+
+_China user can accelerate by taobao mirror :_ ``` npm install  --registry=https://registry.npm.taobao.org```
+
+if you want to see more detail about build, you can see the build.log, or use comamnd build in [test/addons/build](!./test/addons/build)

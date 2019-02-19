@@ -5,13 +5,13 @@ module.exports = {
         */
 		win: {
 
-			build: 'test\\addons\\build.cmd >build.log 2>&1',
+			build: 'test\\addons\\build.cmd >build.log 2>&1'
 		},
 		/*
             Unix scripts, run on a unix environment
         */
 		nix: {
-			build: 'bash test/addons/build',
+			build: 'bash test/addons/build >build.log 2>&1'
 		},
 		/* 
 			Additionally add different commands for osx: (note that if running npmcs
