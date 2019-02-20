@@ -2,6 +2,7 @@
 #ifndef _IN_EMSCRIPTEN_NODE_EMBIND_FILE_
 #error emscripten/n-api/module.cpp can only be include in <emscripten/node-embind>
 #endif
+
 #include <emscripten/bind.h>
 
 
@@ -11,7 +12,6 @@ NS_NAPI_BEGIN
 
 module_t Module::module_;
 napi_env VM::env_ = nullptr;
-
 
 
 //====================================
@@ -40,6 +40,12 @@ void register_function(
 
 NS_NAPI_END
 
+
+
+napi_value Init(napi_env env, napi_value exports) {
+
+  return exports;
+}
 
 
 NAPI_MODULE(NODE_GYP_MODULE_NAME, emscripten::internal::napi::Module::Init);

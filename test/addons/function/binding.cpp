@@ -32,7 +32,7 @@ double Sum(double a, double b, double c) { return a + b + c; }
 //	);
 //	return s;
 //}
-
+/*
 using namespace emscripten;
 EMSCRIPTEN_BINDINGS(binding)
 {
@@ -47,7 +47,7 @@ EMSCRIPTEN_BINDINGS(binding)
 	//function("toUpper", toUpper);
 
 	
-}
+}*/
 
 
 #ifdef EMSCRIPTEN_NODE_EMBIND
