@@ -19,19 +19,19 @@ int   Sum(int a, int b, int c) { return a + b + c; }
 double Sum(double a, double b) { return a + b; }
 double Sum(double a, double b, double c) { return a + b + c; }
 
-std::string toUpper(std::string s) {
-	std::transform(s.begin(), s.end(), s.begin(),
-		[](unsigned char c) { return std::toupper(c); }
-	);
-	return s;
-}
-
-std::string toLower(std::string s) {
-	std::transform(s.begin(), s.end(), s.begin(),
-		[](unsigned char c) { return std::tolower(c); }
-	);
-	return s;
-}
+//std::string toUpper(std::string s) {
+//	std::transform(s.begin(), s.end(), s.begin(),
+//		[](unsigned char c) { return std::toupper(c); }
+//	);
+//	return s;
+//}
+//
+//std::string toLower(std::string s) {
+//	std::transform(s.begin(), s.end(), s.begin(),
+//		[](unsigned char c) { return std::tolower(c); }
+//	);
+//	return s;
+//}
 
 using namespace emscripten;
 EMSCRIPTEN_BINDINGS(binding)
@@ -44,7 +44,7 @@ EMSCRIPTEN_BINDINGS(binding)
 	function("doubleSum", select_overload<double(double, double)>(&Sum));
 	function("doubleSum", select_overload<double(double, double, double)>(&Sum));
 
-	function("toUpper", toUpper);
+	//function("toUpper", toUpper);
 
 	
 }

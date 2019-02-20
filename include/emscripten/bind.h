@@ -18,6 +18,7 @@
 #define EMSCRIPTEN_NODE_EMBIND
 
 #include <emscripten/wire.h>
+
 namespace emscripten {
 
 	namespace internal {
@@ -97,9 +98,9 @@ namespace emscripten {
 				const napi::context_t& ctx)
 			{
 				if (self->argc == ctx.argc) {
-				//	return napi::value<ReturnType>(ctx.env).napi_cast(
-				//		I::invoke(ctx.env, ctx.argv, (Fn)self->function/*static_cast<Fn>(self->function)*/)
-				//	);
+					return napi::value<ReturnType>(ctx.env).napi_cast(
+						I::invoke(ctx.env, ctx.argv, (Fn)self->function/*static_cast<Fn>(self->function)*/)
+					);
 				}
 
 				napi::function_t* fn = self->next;
