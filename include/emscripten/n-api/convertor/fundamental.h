@@ -8,24 +8,24 @@ NS_NAPI_BEGIN
 
 
 template<typename T>
-struct Fundamental;
+struct FundamentalConvertor;
 
 template<>
-struct Fundamental <bool> {
+struct FundamentalConvertor <bool> {
 	typedef bool type;
 	napi_env env_;
 	type     value_;
-	Fundamental(napi_env env)
+	FundamentalConvertor(napi_env env)
 		: env_(env)
 	{}
 
-	inline bool native_cast(napi_value val)
+	inline bool cast(napi_value val)
 	{
 		napi_get_value_bool(env_, val, &value_);
 		return value_;
 	}
 
-	inline napi_value napi_cast(bool val) {
+	inline napi_value napi_value_(bool val) {
 		napi_value res;
 		napi_get_boolean(env_, val, &res);
 		return res;
@@ -34,15 +34,15 @@ struct Fundamental <bool> {
 
 
 template<>
-struct Fundamental <int> {
+struct FundamentalConvertor <int> {
 	typedef int type;
 	napi_env env_;
 	type     value_;
-	Fundamental(napi_env env)
+	FundamentalConvertor(napi_env env)
 		: env_(env)
 	{}
 
-	inline type native_cast(napi_value val)
+	inline type cast(napi_value val)
 	{
 		if (sizeof(int) == 64) {
 			napi_get_value_int64(env_, val, (int64_t*)&value_);
@@ -53,7 +53,7 @@ struct Fundamental <int> {
 		return value_;
 	}
 
-	inline napi_value napi_cast(type val) {
+	inline napi_value napi_value_(type val) {
 		napi_value res;
 		if (sizeof(int) == 64) {
 			napi_create_int64(env_, (int64_t)val, &res);
@@ -66,21 +66,21 @@ struct Fundamental <int> {
 };
 
 template<>
-struct Fundamental <float> {
+struct FundamentalConvertor <float> {
 	typedef float type;
 	napi_env env_;
 	double     value_;
-	Fundamental(napi_env env)
+	FundamentalConvertor(napi_env env)
 		: env_(env)
 	{}
 
-	inline type native_cast(napi_value val)
+	inline type cast(napi_value val)
 	{
 		napi_get_value_double(env_, val, &value_);
 		return static_cast<type>(value_);
 	}
 
-	inline napi_value napi_cast(type val) {
+	inline napi_value napi_value_(type val) {
 		napi_value res;
 		napi_create_double(env_, (double)val, &res);
 		return res;
@@ -89,21 +89,21 @@ struct Fundamental <float> {
 };
 
 template<>
-struct Fundamental <double> {
+struct FundamentalConvertor <double> {
 	typedef double type;
 	napi_env env_;
 	type     value_;
-	Fundamental(napi_env env)
+	FundamentalConvertor(napi_env env)
 		: env_(env)
 	{}
 
-	inline type native_cast(napi_value val)
+	inline type cast(napi_value val)
 	{
 		napi_get_value_double(env_, val, &value_);
 		return value_;
 	}
 
-	inline napi_value napi_cast(type val) {
+	inline napi_value napi_value_(type val) {
 		napi_value res;
 		napi_create_double(env_, (double)val, &res);
 		return res;
@@ -113,21 +113,21 @@ struct Fundamental <double> {
 
 
 template<>
-struct Fundamental <int64_t> {
+struct FundamentalConvertor <int64_t> {
 	typedef int64_t type;
 	napi_env env_;
 	type     value_;
-	Fundamental(napi_env env)
+	FundamentalConvertor(napi_env env)
 		: env_(env)
 	{}
 
-	inline type native_cast(napi_value val)
+	inline type cast(napi_value val)
 	{
 		napi_get_value_int64(env_, val, &value_);
 		return value_;
 	}
 
-	inline napi_value napi_cast(type val) {
+	inline napi_value napi_value_(type val) {
 		napi_value res;
 		napi_create_int64(env_, val, &res);
 		return res;
@@ -136,21 +136,21 @@ struct Fundamental <int64_t> {
 };
 
 template<>
-struct Fundamental <uint64_t> {
+struct FundamentalConvertor <uint64_t> {
 	typedef uint64_t type;
 	napi_env env_;
 	type     value_;
-	Fundamental(napi_env env)
+	FundamentalConvertor(napi_env env)
 		: env_(env)
 	{}
 
-	inline type native_cast(napi_value val)
+	inline type cast(napi_value val)
 	{
 		napi_get_value_int64(env_, val, (int64_t*)&value_);
 		return value_;
 	}
 
-	inline napi_value napi_cast(type val) {
+	inline napi_value napi_value_(type val) {
 		napi_value res;
 		napi_create_int64(env_, val, &res);
 		return res;
@@ -159,41 +159,41 @@ struct Fundamental <uint64_t> {
 };
 
 template<typename T>
-struct Fundamental<const T> : public Fundamental<T> {
-	Fundamental(napi_env env)
-		: Fundamental<T>(env)
+struct FundamentalConvertor<const T> : public FundamentalConvertor<T> {
+	FundamentalConvertor(napi_env env)
+		: FundamentalConvertor<T>(env)
 	{}
 };
 
 template<typename T>
-struct Fundamental<T&> : public Fundamental<T> {
-	Fundamental(napi_env env)
-		: Fundamental<T>(env)
+struct FundamentalConvertor<T&> : public FundamentalConvertor<T> {
+	FundamentalConvertor(napi_env env)
+		: FundamentalConvertor<T>(env)
 	{}
 };
 
 template<typename T>
-struct Fundamental<const T&> : public Fundamental<T> {
-	Fundamental(napi_env env)
-		: Fundamental<T>(env)
+struct FundamentalConvertor<const T&> : public FundamentalConvertor<T> {
+	FundamentalConvertor(napi_env env)
+		: FundamentalConvertor<T>(env)
 	{}
 };
 
 template<typename T>
-struct Fundamental<T&&> {
-	typedef typename Fundamental<T>::type type;
-	Fundamental<T> obj_;
-	Fundamental(napi_env env)
+struct FundamentalConvertor<T&&> {
+	typedef typename FundamentalConvertor<T>::type type;
+	FundamentalConvertor<T> obj_;
+	FundamentalConvertor(napi_env env)
 		: obj_(env)
 	{}
 
-	inline type native_cast(napi_value val)
+	inline type cast(napi_value val)
 	{
-		return obj_.native_cast(val);
+		return obj_.cast(val);
 	}
 
-	inline napi_value napi_cast(type val) {
-		return obj_.napi_cast(val);
+	inline napi_value napi_value_(type val) {
+		return obj_.napi_value_(val);
 	}
 };
 

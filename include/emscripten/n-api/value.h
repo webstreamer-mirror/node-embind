@@ -8,10 +8,10 @@ NS_NAPI_BEGIN
 
 
 template <typename T>
-struct _Convertor {
+struct Convertor {
 	using _T = typename nomakeup<T>::type;
 	
-	using type = typename std::conditional< std::is_fundamental<_T>::value, typename napi::Fundamental<T>, void>::type;
+	using type = typename std::conditional< std::is_fundamental<_T>::value, typename napi::FundamentalConvertor<T>, void>::type;
 
 	static_assert(!std::is_void<type>::value, 
 	"====  Unsupported type in Convertor (support list as below)  ====\n"\
@@ -20,23 +20,8 @@ struct _Convertor {
 };
 
 
-
-//template<typename T>
-//using Convertor = _Convertor<T>::type;
-
-
-template<typename T>
-struct _Value : public _Convertor<T>::type
-{
-	using _Base = typename _Convertor<T>::type;
-	_Value(napi_env env)
-		: _Base(env)
-	{}
-};
-
-
 template <typename T>
-using value = _Value<T>;
+using value = typename Convertor<T>::type;
 
 NS_NAPI_END
 
