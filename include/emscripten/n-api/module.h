@@ -15,12 +15,13 @@ class Module
 {
 public:
 	static napi_value Init(napi_env env, napi_value exports) {
+		printf("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
 
-		Preprocess(module_.functions);
-
-		auto prop = make_napi_property_table(module_.functions);
-
-		napi_define_properties(env, exports, prop.size(), prop.data());
+		//Preprocess(module_.functions);
+//
+		//auto prop = make_napi_property_table(module_.functions);
+//
+		//napi_define_properties(env, exports, prop.size(), prop.data());
 
 
 

@@ -27,7 +27,9 @@ MODULE_LIST.forEach(name =>{
     var mpath = `${__dirname}/${name}/build/${config}/${name}`;
 
     if(fs.existsSync(`${mpath}.node`)){
+        console.log(`import addon: ${mpath}.node`)
         exports[name] = require(mpath);
+        console.log(`import addon: ${mpath}.node done!`)
     }
 })
 module.exports = exports;
