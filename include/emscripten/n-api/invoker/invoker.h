@@ -2,6 +2,7 @@
 #define _NODE_EMBIND_EMSCRIPTEN_NAPI_INVOKER_INVOKER_H_
 
 #include <emscripten/n-api/common.h>
+#include <emscripten/n-api/value.h>
 
 NS_NAPI_BEGIN
 

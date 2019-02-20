@@ -11,8 +11,8 @@ template <typename T>
 struct _Convertor {
 	using _T = typename nomakeup<T>::type;
 	
-	using type = typename std::conditional< std::is_fundamental<_T>::value, typename Fundamental<T>,
-		void >::type;
+	using typex = typename std::conditional< true, int, void>::type;
+	using type = typename std::conditional< std::is_fundamental<_T>::value, typename napi::Fundamental<T>, void>::type;
 
 
 

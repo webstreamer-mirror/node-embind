@@ -130,7 +130,7 @@ namespace emscripten {
 					return nullptr;
 				}
 
-				function_t* fn = self->next;
+				napi::function_t* fn = self->next;
 				while (fn) {
 					if (fn->argc == sizeof...(Args)) {
 						return fn->invoke(fn, ctx);

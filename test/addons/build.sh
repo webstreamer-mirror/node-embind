@@ -50,7 +50,7 @@ function _doBuild(){
 
   echo "[$name] $subcommand"
 
-  local addon=$folder/build/$_CONFIG/{$name}.node
+  local addon=$folder/build/$_CONFIG/$name.node
 
   [ -f  $addon ] && rm -rf $addon
 
