@@ -46,7 +46,7 @@ function _doBuild(){
   [ -n $_build ] && subcommand=build
   [ -n $_rebuild ] && subcommand=rebuild
 
-  [ -z $subcommand ] && return 0;
+  [ -z $subcommand ] && return 0
 
   echo "[$name] $subcommand"
 
@@ -56,10 +56,11 @@ function _doBuild(){
 
   npx node-gyp rebuild -C $folder $_DEBUG
 
-  if [ ! -f $addn ]; then
-     echo "[$name] $subcommand failed."
-     _errorno=11;
-  fi
+  [ -f $addon ] && return 0
+
+  echo "[$name] $subcommand failed."
+  _errorno=11;
+
   return $_errorno
 }
 
@@ -76,7 +77,7 @@ function BuildAll(){
 
     if [ -f $i/binding.gyp ]; then
         BuildOne $i
-        [ $_errorno -ne 0 ] && return ;
+        [ $_errorno -ne 0 ] && return $_errorno
     fi
   done
 }
@@ -135,4 +136,5 @@ else
 
   BuildOne $_dirname/$_project
 fi
+
 exit $_errorno
