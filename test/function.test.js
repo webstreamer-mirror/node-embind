@@ -1,5 +1,5 @@
 const addons = require('./addons')
-console.log(addons)
+
 var chai = require('chai'),
   assert = chai.assert
 
