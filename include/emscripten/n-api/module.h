@@ -20,13 +20,37 @@ inline module_t& node_module()
 class Module
 {
 public:
+
+
+	napi_value static EMBIND_STD_STRING_IS_UTF8_setter(napi_env env, napi_callback_info info) {
+		napi_status status;
+		napi_value world;
+		status = napi_create_string_utf8(env, "world", 5, &world);
+		assert(status == napi_ok);
+		return world;
+	}
+
+	napi_value static EMBIND_STD_STRING_IS_UTF8_getter(napi_env env, napi_callback_info info) {
+		napi_status status;
+		napi_value world;
+		status = napi_create_string_utf8(env, "world", 5, &world);
+		assert(status == napi_ok);
+		return world;
+	}
+
 	static napi_value Init(napi_env env, napi_value exports) {
 		module_t& m = node_module();
-
 
 		Preprocess(m.functions);
 
 		auto prop = make_napi_property_table(m.functions);
+
+
+
+		napi_value is_utf8;
+		
+		prop.push_back({ "EMBIND_STD_STRING_IS_UTF8", nullptr,nullptr,nullptr,nullptr,
+			is_utf8,napi_default,nullptr });
 
 		napi_define_properties(env, exports, prop.size(), prop.data());
 
@@ -35,6 +59,7 @@ public:
 		return exports;
 	}
 
+		static	bool EMBIND_STD_STRING_IS_UTF8;
 protected:
 
 	static void Preprocess(std::list<function_t*>& functions) {
@@ -70,10 +95,7 @@ protected:
 		}
 		return prop;
 	}
-
 };
-
-
 
 // ==================================
 //   Registers

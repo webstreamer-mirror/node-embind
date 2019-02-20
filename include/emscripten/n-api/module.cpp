@@ -9,7 +9,7 @@
 
 NS_NAPI_BEGIN
 
-module_t module__;
+bool Module::EMBIND_STD_STRING_IS_UTF8 = false;
 
 
 //====================================
