@@ -9,9 +9,11 @@
 
 NS_NAPI_BEGIN
 
+module_t module__;
 
-module_t Module::module_;
-napi_env VM::env_ = nullptr;
+//module_t Module::module;
+//napi_env VM::env_ = nullptr;
+
 
 
 //====================================
@@ -25,7 +27,7 @@ void register_function(
 	GenericFunction invoker,
 	GenericFunction function)
 {
-	module_t& m = Module::module_;
+	module_t& m = node_module();
 	function_t* f = new function_t();
 	f->name = name;
 	f->argc = argCount - 1;

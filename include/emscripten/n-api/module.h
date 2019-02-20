@@ -11,28 +11,37 @@ struct module_t {
 	napi_value env_;
 };
 
+inline module_t& node_module()
+{
+	static module_t module;
+	return module;
+}
+
 class Module
 {
 public:
 	static napi_value Init(napi_env env, napi_value exports) {
-		printf("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+		module_t& m = node_module();
 
-		//Preprocess(module_.functions);
+
+		Preprocess(m.functions);
 //
-		//auto prop = make_napi_property_table(module_.functions);
+		auto prop = make_napi_property_table(m.functions);
 //
-		//napi_define_properties(env, exports, prop.size(), prop.data());
+		napi_define_properties(env, exports, prop.size(), prop.data());
 
 
 
 		return exports;
 	}
 
-	static module_t module_;
-	static napi_value env(napi_value e = nullptr) {
-		if (e) module_.env_ = e;
-		return module_.env_;
-	}
+	//static module_t module;
+
+	//static module_t module_;
+	//static napi_value env(napi_value e = nullptr) {
+	//	if (e) module_.env_ = e;
+	//	return module_.env_;
+	//}
 protected:
 
 	static void Preprocess(std::list<function_t*>& functions) {
@@ -83,6 +92,8 @@ void register_function(
 	const TYPEID argTypes[],
 	GenericFunction invoker,
 	GenericFunction function);
+
+
 NS_NAPI_END
 
 
