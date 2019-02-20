@@ -25,9 +25,9 @@ public:
 
 
 		Preprocess(m.functions);
-//
+
 		auto prop = make_napi_property_table(m.functions);
-//
+
 		napi_define_properties(env, exports, prop.size(), prop.data());
 
 
@@ -35,13 +35,6 @@ public:
 		return exports;
 	}
 
-	//static module_t module;
-
-	//static module_t module_;
-	//static napi_value env(napi_value e = nullptr) {
-	//	if (e) module_.env_ = e;
-	//	return module_.env_;
-	//}
 protected:
 
 	static void Preprocess(std::list<function_t*>& functions) {

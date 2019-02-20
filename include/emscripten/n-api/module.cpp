@@ -11,10 +11,6 @@ NS_NAPI_BEGIN
 
 module_t module__;
 
-//module_t Module::module;
-//napi_env VM::env_ = nullptr;
-
-
 
 //====================================
 //       Registers
@@ -43,11 +39,6 @@ void register_function(
 NS_NAPI_END
 
 
-
-napi_value Init(napi_env env, napi_value exports) {
-
-  return exports;
-}
 
 
 NAPI_MODULE(NODE_GYP_MODULE_NAME, emscripten::internal::napi::Module::Init);
