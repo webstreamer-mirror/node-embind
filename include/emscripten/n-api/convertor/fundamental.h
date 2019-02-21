@@ -16,7 +16,7 @@ struct FundamentalConvertor <bool> {
 	typedef bool type;
 	type     value_;
 
-	inline type get(napi_env env, napi_value val)
+	inline type cast(napi_env env, napi_value val)
 	{
 		napi_get_value_bool(env, val, &value_);
 		return value_;
@@ -34,7 +34,7 @@ template<>
 struct FundamentalConvertor <int> {
 	typedef int type;
 	type     value_;
-	inline type get(napi_env env, napi_value val)
+	inline type cast(napi_env env, napi_value val)
 	{
 		if (sizeof(int) == 64) {
 			napi_get_value_int64(env, val, (int64_t*)&value_);
@@ -62,7 +62,7 @@ struct FundamentalConvertor <float> {
 	typedef float type;
 	double     value_;
 
-	inline type get(napi_env env, napi_value val)
+	inline type cast(napi_env env, napi_value val)
 	{
 		napi_get_value_double(env, val, &value_);
 		return static_cast<type>(value_);
@@ -81,7 +81,7 @@ struct FundamentalConvertor <double> {
 	typedef double type;
 	type     value_;
 
-	inline type get(napi_env env, napi_value val)
+	inline type cast(napi_env env, napi_value val)
 	{
 		napi_get_value_double(env, val, &value_);
 		return value_;
@@ -101,7 +101,7 @@ struct FundamentalConvertor <int64_t> {
 	typedef int64_t type;
 	type     value_;
 
-	inline type get(napi_env env, napi_value val) {
+	inline type cast(napi_env env, napi_value val) {
 		napi_get_value_int64(env, val, &value_);
 		return value_;
 	}
@@ -119,7 +119,7 @@ struct FundamentalConvertor <uint64_t> {
 	typedef uint64_t type;
 	type     value_;
 
-	inline type get(napi_env env, napi_value val) {
+	inline type cast(napi_env env, napi_value val) {
 		napi_get_value_int64(env, val, (int64_t*)&value_);
 		return value_;
 	}

@@ -23,7 +23,7 @@ struct Invoker <ReturnType, T0>
 {
 	inline static ReturnType invoke(napi_env env, napi_value argv[], ReturnType(*fn)(T0)) {
 		return fn(
-			napi::value<T0>().get(env, argv[0]),
+			napi::value<T0>().cast(env, argv[0]),
 		);
 	}
 };
@@ -34,8 +34,8 @@ struct Invoker <ReturnType, T0, T1>
 	inline static ReturnType invoke(napi_env env, napi_value argv[], ReturnType(*fn)(T0, T1)) {
 
 		return fn(
-			napi::value<T0>().get(env, argv[0]),
-			napi::value<T1>().get(env, argv[1])
+			napi::value<T0>().cast(env, argv[0]),
+			napi::value<T1>().cast(env, argv[1])
 		);
 	}
 };
@@ -46,9 +46,9 @@ struct Invoker <ReturnType, T0, T1, T2>
 	inline static ReturnType invoke(napi_env env, napi_value argv[], ReturnType(*fn)(T0, T1, T2)) {
 
 		return fn(
-			napi::value<T0>().get(env,argv[0]),
-			napi::value<T1>().get(env,argv[1]),
-			napi::value<T2>().get(env,argv[2])
+			napi::value<T0>().cast(env,argv[0]),
+			napi::value<T1>().cast(env,argv[1]),
+			napi::value<T2>().cast(env,argv[2])
 
 		);
 	}
