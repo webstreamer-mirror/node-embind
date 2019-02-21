@@ -8,7 +8,7 @@
 #include <emscripten/bind.h>
 
 
-#if 0
+#ifdef _MSC_VER
 bool WideStringToString(const std::wstring& src, std::string &str)
 {
 	std::locale sys_locale("");
@@ -82,13 +82,23 @@ bool UTF8StringToWCharString(const std::string &u8str, std::wstring &wstr)
 	return true;
 }
 
+std::string wstringToUTF8String(const std::wstring wstr)
+{
+	std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
+	return conv.to_bytes(wstr);
+}
 
+#define _T(x) wstringToUTF8String((wchar_t*)"\0x00E1")
+#else
+#define _T(x) wstringToUTF8String(x)
 #endif
 
 std::string get_non_ascii_string(bool embindStdStringUTF8Support) {
 	if (embindStdStringUTF8Support) {
+
 		//ASCII
 		std::string testString{ "aei" };
+
 		//Latin-1 Supplement
 		testString += "\u00E1\u00E9\u00ED";
 		//Greek
