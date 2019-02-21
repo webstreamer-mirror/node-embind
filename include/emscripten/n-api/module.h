@@ -20,6 +20,7 @@ inline module_t& node_module()
 class Module
 {
 public:
+	static	bool EMBIND_STD_STRING_IS_UTF8;
 
 	static napi_value EMBIND_STD_STRING_IS_UTF8_setter(napi_env env, napi_callback_info info) {
 		size_t argc = 1;
@@ -55,7 +56,7 @@ public:
 		return exports;
 	}
 
-	static	bool EMBIND_STD_STRING_IS_UTF8;
+
 protected:
 
 	static void Preprocess(std::list<function_t*>& functions) {
