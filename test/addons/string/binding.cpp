@@ -8,7 +8,7 @@
 #include <emscripten/bind.h>
 
 
-
+#if 0
 bool WideStringToString(const std::wstring& src, std::string &str)
 {
 	std::locale sys_locale("");
@@ -83,7 +83,7 @@ bool UTF8StringToWCharString(const std::string &u8str, std::wstring &wstr)
 }
 
 
-
+#endif
 
 std::string get_non_ascii_string(bool embindStdStringUTF8Support) {
 	if (embindStdStringUTF8Support) {
@@ -113,7 +113,7 @@ std::string get_non_ascii_string(bool embindStdStringUTF8Support) {
 
 std::string chinese() {
 	std::string str;
-	WCharStringToUTF8String(std::wstring(L"ÖÐ¹ú"), str);
+	//WCharStringToUTF8String(std::wstring(L"ï¿½Ð¹ï¿½"), str);
 	return str;
 }
 
