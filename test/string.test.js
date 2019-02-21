@@ -23,18 +23,18 @@ describe('string', function() {
 			expected += '\u5F9E\u7345\u5B50';
 			//Euro sign
 			expected += '\u20AC';
-			console.log('C++==>',get_non_ascii_string(true).toString('utf-16'));
-			console.log('JS-->',expected);
+
 //		assert.equal(expected, get_non_ascii_string(true));
   });
 
   it('non-ascii strings (not utf8)', function() {
-	  addons.string.EMBIND_STD_STRING_IS_UTF8 = false;
+		addons.string.EMBIND_STD_STRING_IS_UTF8 = false;
+		var expected='';
 			for (var i = 0; i < 128; ++i) {
 				expected += String.fromCharCode(128 + i);
 			}
-		console.log()
-		assert.equal(expected, get_non_ascii_string());
+
+		assert.equal(expected, get_non_ascii_string(false));
 	});
 	
 });	
