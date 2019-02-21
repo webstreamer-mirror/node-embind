@@ -8,6 +8,9 @@ describe('string', function() {
 		get_non_ascii_string
 	} = addons.string;
 
+	if(process.platform == 'linux'){
+		// FIXME: Windows is not OK, I'm not sure why
+
   it('non-ascii strings (utf8)', function() {
 	  addons.string.EMBIND_STD_STRING_IS_UTF8 = true;
 		var expected = '';
@@ -23,9 +26,10 @@ describe('string', function() {
 			expected += '\u5F9E\u7345\u5B50';
 			//Euro sign
 			expected += '\u20AC';
-
-//		assert.equal(expected, get_non_ascii_string(true));
+			assert.equal(expected, get_non_ascii_string(true));
   });
+
+	}
 
   it('non-ascii strings (not utf8)', function() {
 		addons.string.EMBIND_STD_STRING_IS_UTF8 = false;
