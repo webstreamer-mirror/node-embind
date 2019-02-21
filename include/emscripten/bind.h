@@ -98,8 +98,7 @@ namespace emscripten {
 				const napi::context_t& ctx)
 			{
 				if (self->argc == ctx.argc) {
-					return napi::value<ReturnType>(ctx.env)
-						.napi_value_(I::invoke(ctx.env, ctx.argv, (Fn)self->function));
+					return napi::value<ReturnType>::create(ctx.env,I::invoke(ctx.env, ctx.argv, (Fn)self->function));
 				}
 
 				napi::function_t* fn = self->next;
