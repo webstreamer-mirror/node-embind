@@ -21,21 +21,20 @@ class Module
 {
 public:
 
-
-	napi_value static EMBIND_STD_STRING_IS_UTF8_setter(napi_env env, napi_callback_info info) {
-		napi_status status;
-		napi_value world;
-		status = napi_create_string_utf8(env, "world", 5, &world);
-		assert(status == napi_ok);
-		return world;
+	static napi_value EMBIND_STD_STRING_IS_UTF8_setter(napi_env env, napi_callback_info info) {
+		size_t argc = 1;
+		napi_value argv = nullptr;
+		napi_get_cb_info(env, info, &argc, &argv, nullptr, nullptr);
+		if (argc == 1) {
+			napi_get_value_bool(env, argv, &EMBIND_STD_STRING_IS_UTF8);
+		}
+		return nullptr;
 	}
 
-	napi_value static EMBIND_STD_STRING_IS_UTF8_getter(napi_env env, napi_callback_info info) {
-		napi_status status;
-		napi_value world;
-		status = napi_create_string_utf8(env, "world", 5, &world);
-		assert(status == napi_ok);
-		return world;
+	static napi_value EMBIND_STD_STRING_IS_UTF8_getter(napi_env env, napi_callback_info info) {
+		napi_value value=nullptr;
+		napi_get_boolean(env, EMBIND_STD_STRING_IS_UTF8, &value);
+		return value;
 	}
 
 	static napi_value Init(napi_env env, napi_value exports) {
@@ -44,13 +43,10 @@ public:
 		Preprocess(m.functions);
 
 		auto prop = make_napi_property_table(m.functions);
-
-
-
-		napi_value is_utf8;
 		
-		prop.push_back({ "EMBIND_STD_STRING_IS_UTF8", nullptr,nullptr,nullptr,nullptr,
-			is_utf8,napi_default,nullptr });
+		prop.push_back({ "EMBIND_STD_STRING_IS_UTF8", nullptr,nullptr,
+			EMBIND_STD_STRING_IS_UTF8_getter, EMBIND_STD_STRING_IS_UTF8_setter,
+			nullptr,napi_default,nullptr });
 
 		napi_define_properties(env, exports, prop.size(), prop.data());
 
@@ -59,7 +55,7 @@ public:
 		return exports;
 	}
 
-		static	bool EMBIND_STD_STRING_IS_UTF8;
+	static	bool EMBIND_STD_STRING_IS_UTF8;
 protected:
 
 	static void Preprocess(std::list<function_t*>& functions) {
