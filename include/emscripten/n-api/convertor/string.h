@@ -4,6 +4,7 @@
 #include <emscripten/n-api/common.h>
 #include <emscripten/n-api/module.h>
 
+
 NS_NAPI_BEGIN
 
 
@@ -19,35 +20,34 @@ struct StringConvertor <std::string> {
 		: env_(env)
 	{}
 
-	inline type cast(napi_value val)
+	inline type cast(napi_env env, napi_value val)
 	{
 		napi_value res;
 		size_t len = 0;
-
+	
 		if (Module::EMBIND_STD_STRING_IS_UTF8) {
-
-			::napi_create_string_utf8(env_, res, nullptr, 0, &len);
+			::napi_get_value_string_utf8(env, val, nullptr, 0, &len);
 			value_.resize(len);
-			::napi_create_string_utf8(env_, res, value_.data(), value_.size(), &len);
+			::napi_get_value_string_utf8(env, val, (char*)value_.data(), value_.size(), &len);
 			assert(value_.size() == len);
 		}
 		else {
-			::napi_create_string_utf16(env_, res, nullptr, 0, &len);
+			::napi_get_value_string_latin1(env, val, nullptr, 0, &len);
 			value_.resize(len);
-			::napi_create_string_utf16(env_, res, value_.data(), value_.size(), &len);
+			::napi_get_value_string_latin1(env, val, (char*)value_.data(), value_.size(), &len);
 			assert(value_.size() == len);
 		}
 		napi_get_boolean(env_, val, &res);
 		return value_;
 	}
 
-	inline napi_value napi_value_(type val) {
+	inline static napi_value create(napi_env env, type val) {
 		napi_value res;
 		if (Module::EMBIND_STD_STRING_IS_UTF8) {
-			::napi_create_string_utf8(env_, val.data(),val.size(),&res);
+			::napi_create_string_utf8(env, val.data(),val.size(),&res);
 		}
 		else {
-			::napi_create_string_utf16(env_, val.data(), val.size(), &res);
+			::napi_create_string_latin1(env, val.data(), val.size(), &res);
 		}
 		return res;
 	}

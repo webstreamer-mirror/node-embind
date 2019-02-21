@@ -3,15 +3,89 @@
 #include <time.h>
 #include <iostream>
 #include <cctype>
+#include <codecvt>
 
 #include <emscripten/bind.h>
 
 
 
+bool WideStringToString(const std::wstring& src, std::string &str)
+{
+	std::locale sys_locale("");
+
+	const wchar_t* data_from = src.c_str();
+	const wchar_t* data_from_end = src.c_str() + src.size();
+	const wchar_t* data_from_next = 0;
+
+	int wchar_size = 4;
+	char* data_to = new char[(src.size() + 1) * wchar_size];
+	char* data_to_end = data_to + (src.size() + 1) * wchar_size;
+	char* data_to_next = 0;
+
+	memset(data_to, 0, (src.size() + 1) * wchar_size);
+
+	typedef std::codecvt<wchar_t, char, mbstate_t> convert_facet;
+	mbstate_t out_state = { 0 };
+	auto result = std::use_facet<convert_facet>(sys_locale).out(
+		out_state, data_from, data_from_end, data_from_next,
+		data_to, data_to_end, data_to_next);
+	if (result == convert_facet::ok)
+	{
+		str = data_to;
+		delete[] data_to;
+		return true;
+	}
+	delete[] data_to;
+	return false;
+}
+
+bool StringToWideString(const std::string& src, std::wstring &wstr)
+{
+	std::locale sys_locale("");
+	const char* data_from = src.c_str();
+	const char* data_from_end = src.c_str() + src.size();
+	const char* data_from_next = 0;
+
+	wchar_t* data_to = new wchar_t[src.size() + 1];
+	wchar_t* data_to_end = data_to + src.size() + 1;
+	wchar_t* data_to_next = 0;
+
+	wmemset(data_to, 0, src.size() + 1);
+
+	typedef std::codecvt<wchar_t, char, mbstate_t> convert_facet;
+	mbstate_t in_state = { 0 };
+	auto result = std::use_facet<convert_facet>(sys_locale).in(
+		in_state, data_from, data_from_end, data_from_next,
+		data_to, data_to_end, data_to_next);
+	if (result == convert_facet::ok)
+	{
+		wstr = data_to;
+		delete[] data_to;
+		return true;
+	}
+	delete[] data_to;
+	return false;
+}
 
 
-//std::string 
-int get_non_ascii_string(bool embindStdStringUTF8Support) {
+bool WCharStringToUTF8String(const std::wstring &wstr, std::string &u8str)
+{
+	std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
+	u8str = conv.to_bytes(wstr);
+	return true;
+}
+
+bool UTF8StringToWCharString(const std::string &u8str, std::wstring &wstr)
+{
+	std::wstring_convert<std::codecvt_utf8<wchar_t> > conv;
+	wstr = conv.from_bytes(u8str);
+	return true;
+}
+
+
+
+
+std::string get_non_ascii_string(bool embindStdStringUTF8Support) {
 	if (embindStdStringUTF8Support) {
 		//ASCII
 		std::string testString{ "aei" };
@@ -25,7 +99,7 @@ int get_non_ascii_string(bool embindStdStringUTF8Support) {
 		testString += "\u5F9E\u7345\u5B50";
 		//Euro sign
 		testString += "\u20AC";
-		//return testString;
+		return testString;
 	}
 	else {
 		char c[128 + 1];
@@ -33,19 +107,22 @@ int get_non_ascii_string(bool embindStdStringUTF8Support) {
 		for (int i = 0; i < 128; ++i) {
 			c[i] = 128 + i;
 		}
-		//return c;
+		return c;
 	}
-	return 0;
 }
 
-
+std::string chinese() {
+	std::string str;
+	WCharStringToUTF8String(std::wstring(L"ÖÐ¹ú"), str);
+	return str;
+}
 
 EMSCRIPTEN_BINDINGS(binding)
 {
     using namespace emscripten;
 	
 	function("get_non_ascii_string", get_non_ascii_string);
-	
+	function("chinese", chinese);
 
 }
 

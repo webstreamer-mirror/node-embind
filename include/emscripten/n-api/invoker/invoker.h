@@ -23,7 +23,7 @@ struct Invoker <ReturnType, T0>
 {
 	inline static ReturnType invoke(napi_env env, napi_value argv[], ReturnType(*fn)(T0)) {
 		return fn(
-			napi::value<T0>().cast(env, argv[0]),
+			napi::value<T0>().cast(env, argv[0])
 		);
 	}
 };
