@@ -7,18 +7,17 @@ var chai = require('chai'),
   const {
     Inc,
     intSum,
-    doubleSum
+    doubleSum,
+    Set,
+    Get
   } = addons.function;
 
-  describe('#Inc()', function() {
     it('function without param', function() {
       assert.strictEqual(Inc() ,Inc()-1);
     });
-  });
 
 
 
-  describe('#Sum', function() {
     it('function overload', function() {
         assert.strictEqual(intSum(1 ,2 , 3),6)
         assert.strictEqual(intSum(1 ,2 ),3)
@@ -26,6 +25,11 @@ var chai = require('chai'),
         assert.approximately(doubleSum(1.1 ,2.2 ),3.3, 0.01)
 
     });
-  })
+    it('function no return', function() {
+        Set(2018);
+        assert.strictEqual(2018,Get());
+        Set(2019);
+        assert.strictEqual(2019,Get());
+    });
 
 });
