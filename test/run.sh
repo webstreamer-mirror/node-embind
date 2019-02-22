@@ -5,7 +5,7 @@ project=string
 platform=linux
 build=./test/addons/build.sh
 _uname=$(uname)
-echo $_uname "@@@@@@@@@@@"
+
 [[ $_uname == MSYS_NT* ]] && platform=windows
 [[ $_uname == MINGW*_NT* ]] && platform=windows
 
