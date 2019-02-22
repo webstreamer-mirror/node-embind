@@ -16,30 +16,39 @@ namespace convertor {
 		typedef std::string type;
 		type     value;
 
-		String(napi_env env, napi_value val)
+		String(napi_env env, ::napi_value val)
 		{
+			napi_status status;
 			size_t len = 0;
 
 			if (Module::EMBIND_STD_STRING_IS_UTF8) {
-				::napi_get_value_string_utf8(env, val, nullptr, 0, &len);
+				status = ::napi_get_value_string_utf8(env, val, nullptr, 0, &len);
+				NODE_EMBIND_ERROR_NAPICALL_CHECK(env, status);
+
 				value.resize(len);
-				::napi_get_value_string_utf8(env, val, (char*)value.data(), value.size()+1, &len);
+				status = ::napi_get_value_string_utf8(env, val, (char*)value.data(), value.size()+1, &len);
+				NODE_EMBIND_ERROR_NAPICALL_CHECK(env, status);
 			}
 			else {
-				::napi_get_value_string_latin1(env, val, nullptr, 0, &len);
+				status = ::napi_get_value_string_latin1(env, val, nullptr, 0, &len);
+				NODE_EMBIND_ERROR_NAPICALL_CHECK(env, status);
+
 				value.resize(len);
-				::napi_get_value_string_latin1(env, val, (char*)value.data(), value.size(), &len);
+				status = ::napi_get_value_string_latin1(env, val, (char*)value.data(), value.size(), &len);
+				NODE_EMBIND_ERROR_NAPICALL_CHECK(env, status);
 			}
 		}
 
-		inline static napi_value create(napi_env env, type val) {
-			napi_value res;
+		inline static ::napi_value napi_value(napi_env env, type val) {
+			napi_status status;
+			::napi_value res;
 			if (Module::EMBIND_STD_STRING_IS_UTF8) {
-				::napi_create_string_utf8(env, val.data(), val.size(), &res);
+				status = ::napi_create_string_utf8(env, val.data(), val.size(), &res);
 			}
 			else {
-				::napi_create_string_latin1(env, val.data(), val.size(), &res);
+				status = ::napi_create_string_latin1(env, val.data(), val.size(), &res);
 			}
+			NODE_EMBIND_ERROR_NAPICALL_CHECK(env, status);
 			return res;
 		}
 	};
@@ -48,29 +57,29 @@ namespace convertor {
 
 	template<typename T>
 	struct String<const T> : public String<T> {
-		String(napi_env env, napi_value val)
-			: String<T>(napi_env env, napi_value val)
+		String(napi_env env, ::napi_value val)
+			: String<T>(napi_env env, ::napi_value val)
 		{}
 	};
 
 	template<typename T>
 	struct String<T&> : public String<T> {
-		String(napi_env env, napi_value val)
-			: String<T>(napi_env env, napi_value val)
+		String(napi_env env, ::napi_value val)
+			: String<T>(env, val)
 		{}
 	};
 
 	template<typename T>
 	struct String<const T&> : public String<T> {
-		String(napi_env env, napi_value val)
+		String(napi_env env, ::napi_value val)
 			: String<T>(env,val)
 		{}
 	};
 
 	template<typename T>
 	struct String<T&&> {
-		String(napi_env env, napi_value val)
-			: String<T>(napi_env env, napi_value val)
+		String(napi_env env, ::napi_value val)
+			: String<T>(env, val)
 		{}
 
 	};

@@ -18,12 +18,16 @@ namespace convertor {
 
 		Fundamental(napi_env env, napi_value val)
 		{
-			napi_get_value_bool(env, val, &this->value);
+			napi_status status;
+			status = napi_get_value_bool(env, val, &this->value);
+			NODE_EMBIND_ERROR_NAPICALL_CHECK(env, status);
 		}
 
 		inline static napi_value create(napi_env env, type val) {
+			napi_status status;
 			napi_value res;
-			napi_get_boolean(env, val, &res);
+			status  = napi_get_boolean(env, val, &res);
+			NODE_EMBIND_ERROR_NAPICALL_CHECK(env, status);
 			return res;
 		}
 	};
@@ -35,22 +39,29 @@ namespace convertor {
 		type     value;
 		Fundamental(napi_env env, napi_value val)
 		{
+			napi_status status;
 			if (sizeof(int) == 64) {
-				napi_get_value_int64(env, val, (int64_t*)&this->value);
+				status = napi_get_value_int64(env, val, (int64_t*)&this->value);
 			}
 			else {
-				napi_get_value_int32(env, val, (int32_t*)&this->value);
+				status = napi_get_value_int32(env, val, (int32_t*)&this->value);
 			}
+
+			NODE_EMBIND_ERROR_NAPICALL_CHECK(env, status);
 		}
 
 		inline static napi_value create(napi_env env, type val) {
+			napi_status status;
 			napi_value res;
 			if (sizeof(int) == 64) {
-				napi_create_int64(env, (int64_t)val, &res);
+				status = napi_create_int64(env, (int64_t)val, &res);
 			}
 			else {
-				napi_create_int32(env, (int32_t)val, &res);
+				status = napi_create_int32(env, (int32_t)val, &res);
 			}
+			
+			NODE_EMBIND_ERROR_NAPICALL_CHECK(env, status);
+
 			return res;
 		}
 	};
@@ -62,12 +73,16 @@ namespace convertor {
 
 		Fundamental(napi_env env, napi_value val)
 		{
-			napi_get_value_double(env, val, &this->value);
+			napi_status status;
+			status =napi_get_value_double(env, val, &this->value);
+			NODE_EMBIND_ERROR_NAPICALL_CHECK(env, status);
 		}
 
 		inline static napi_value create(napi_env env, type val) {
+			napi_status status;
 			napi_value res;
-			napi_create_double(env, (double)val, &res);
+			status =napi_create_double(env, (double)val, &res);
+			NODE_EMBIND_ERROR_NAPICALL_CHECK(env, status);
 			return res;
 		}
 
@@ -80,12 +95,16 @@ namespace convertor {
 
 		Fundamental(napi_env env, napi_value val)
 		{
-			napi_get_value_double(env, val, &this->value);
+			napi_status status;
+			status = napi_get_value_double(env, val, &this->value);
+			NODE_EMBIND_ERROR_NAPICALL_CHECK(env, status);
 		}
 
 		inline static napi_value create(napi_env env, type val) {
+			napi_status status;
 			napi_value res;
-			napi_create_double(env, (double)val, &res);
+			status = napi_create_double(env, (double)val, &res);
+			NODE_EMBIND_ERROR_NAPICALL_CHECK(env, status);
 			return res;
 		}
 
@@ -98,12 +117,16 @@ namespace convertor {
 		type     value;
 
 		Fundamental(napi_env env, napi_value val) {
-			napi_get_value_int64(env, val, &this->value);
+			napi_status status;
+			status = napi_get_value_int64(env, val, &this->value);
+			NODE_EMBIND_ERROR_NAPICALL_CHECK(env, status);
 		}
 
 		inline static napi_value create(napi_env env, type val) {
+			napi_status status;
 			napi_value res;
-			napi_create_int64(env, val, &res);
+			status = napi_create_int64(env, val, &res);
+			NODE_EMBIND_ERROR_NAPICALL_CHECK(env, status);
 			return res;
 		}
 
@@ -115,12 +138,16 @@ namespace convertor {
 		type     value;
 
 		Fundamental(napi_env env, napi_value val) {
-			napi_get_value_int64(env, val, (int64_t*)&this->value);
+			napi_status status;
+			status = napi_get_value_int64(env, val, (int64_t*)&this->value);
+			NODE_EMBIND_ERROR_NAPICALL_CHECK(env, status);
 		}
 
 		inline static napi_value create(napi_env env, type val) {
+			napi_status status;
 			napi_value res;
-			napi_create_int64(env, val, &res);
+			status = napi_create_int64(env, val, &res);
+			NODE_EMBIND_ERROR_NAPICALL_CHECK(env, status);
 			return res;
 		}
 
