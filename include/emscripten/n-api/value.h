@@ -11,12 +11,11 @@ template <typename T>
 struct Convertor {
 	using _T = typename nomakeup<T>::type;
 	
-	using type = 
-		typename std::conditional< std::is_fundamental<_T>::value, typename convertor::Fundamental<T>, 
-		
-		void>::type
+	using type =
+		typename std::conditional< std::is_fundamental<_T>::value, typename convertor::Fundamental<T>,
+		void>::type;
 
-	>::type;
+
 	static_assert(!std::is_void<type>::value, 
 	"====  Unsupported type in Convertor (support list as below)  ====\n"\
 	"1. fundamental\n"		

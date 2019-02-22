@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 __dir__=$( cd $( dirname ${BASH_SOURCE[0]} ) && pwd )
 
 project=string

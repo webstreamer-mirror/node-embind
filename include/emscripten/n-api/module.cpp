@@ -9,8 +9,6 @@
 
 NS_NAPI_BEGIN
 
-bool Module::EMBIND_STD_STRING_IS_UTF8 = false;
-
 
 //====================================
 //       Registers
