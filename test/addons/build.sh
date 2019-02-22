@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 _dirname=$( cd $( dirname ${BASH_SOURCE[0]} ) && pwd )
 
