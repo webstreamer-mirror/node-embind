@@ -98,7 +98,7 @@ namespace emscripten {
 				const napi::context_t& ctx)
 			{
 				if (self->argc == ctx.argc) {
-					return napi::value<ReturnType>::create(ctx.env,I::invoke(ctx.env, ctx.argv, (Fn)self->function));
+					return napi::value<ReturnType>::napi_value(ctx.env,I::invoke(ctx.env, ctx.argv, (Fn)self->function));
 				}
 
 				napi::function_t* fn = self->next;
@@ -108,8 +108,8 @@ namespace emscripten {
 					}
 				}
 
-				// TODO: throw error here
-
+				// no match overwrite function match the provide arguments.
+				napi_throw_error(ctx.env, NODE_EMBIND_ERROR_ARGC, NODE_EMBIND_ERROR_ARGC_MSG);
 				return nullptr;
 			}
 
@@ -123,19 +123,19 @@ namespace emscripten {
 
 			static napi_value invoke(const napi::function_t* self, const napi::context_t& ctx)
 			{
-				if (self->argc == sizeof...(Args)) {
+				if (self->argc == ctx.argc) {
 					I::invoke(ctx.env, ctx.argv, (Fn)self->function/*static_cast<Fn>(self->function)*/);
 					return nullptr;
 				}
 
 				napi::function_t* fn = self->next;
 				while (fn) {
-					if (fn->argc == sizeof...(Args)) {
+					if (fn->argc == ctx.argc) {
 						return fn->invoke(fn, ctx);
 					}
 				}
 
-				// TODO: throw error here
+				napi_throw_error(ctx.env, NODE_EMBIND_ERROR_ARGC, NODE_EMBIND_ERROR_ARGC_MSG);
 
 				return nullptr;
 			}

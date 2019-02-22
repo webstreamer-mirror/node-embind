@@ -4,6 +4,7 @@
 #include <emscripten/n-api/common.h>
 #include <emscripten/n-api/value.h>
 
+#define _arg(n) napi::value<T##n>(env, argv[n]).value
 NS_NAPI_BEGIN
 
 template<typename ReturnType, typename... Args>
@@ -22,9 +23,7 @@ template<typename ReturnType, typename T0>
 struct Invoker <ReturnType, T0>
 {
 	inline static ReturnType invoke(napi_env env, napi_value argv[], ReturnType(*fn)(T0)) {
-		return fn(
-			napi::value<T0>().cast(env, argv[0]),
-		);
+		return fn(_arg(0));
 	}
 };
 
@@ -33,10 +32,7 @@ struct Invoker <ReturnType, T0, T1>
 {
 	inline static ReturnType invoke(napi_env env, napi_value argv[], ReturnType(*fn)(T0, T1)) {
 
-		return fn(
-			napi::value<T0>().cast(env, argv[0]),
-			napi::value<T1>().cast(env, argv[1])
-		);
+		return fn(_arg(0),_arg(1));
 	}
 };
 
@@ -45,12 +41,7 @@ struct Invoker <ReturnType, T0, T1, T2>
 {
 	inline static ReturnType invoke(napi_env env, napi_value argv[], ReturnType(*fn)(T0, T1, T2)) {
 
-		return fn(
-			napi::value<T0>().cast(env,argv[0]),
-			napi::value<T1>().cast(env,argv[1]),
-			napi::value<T2>().cast(env,argv[2])
-
-		);
+		return fn(_arg(0), _arg(1), _arg(2));
 	}
 };
 
