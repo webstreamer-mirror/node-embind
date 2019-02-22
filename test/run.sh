@@ -49,18 +49,21 @@ echo "===================================="
 
 cd $__dir__/..
 
+_project=$project
+[[ $project == 'all' ]] && _project=
+
 
 if [[ $_build == Yes ]];then
-  _project=$project
-  [[ $project == '*' ]] && _project=
+  
   if [[ $platform == 'windows' ]]; then
-	cmd.exe /C ".\\test\\addons\\build.cmd $project"
-else
+	cmd.exe /C ".\\test\\addons\\build.cmd $_project"
+  else
 	bash ./test/addons/build.sh $_project
   fi
 fi
+
 ret=$?
 [ $_build == Yes ] && [ $ret -ne 0 ] && echo "Build failed !" && exit 1
 
-
-[[ $_test == Yes ]] && npx mocha ./test/$project.test.js
+[[ $project == 'all' ]] && _project='*'
+[[ $_test == Yes ]] && npx mocha ./test/$_project.test.js
