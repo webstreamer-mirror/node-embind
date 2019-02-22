@@ -5,11 +5,10 @@ var chai = require('chai'),
 
 describe('string', function() {
 	const {
-		get_non_ascii_string
+		get_non_ascii_string,
+		nop
 	} = addons.string;
 
-	if(process.platform == 'linux'){
-		// FIXME: Windows is not OK, I'm not sure why
 
   it('non-ascii strings (utf8)', function() {
 	  addons.string.EMBIND_STD_STRING_IS_UTF8 = true;
@@ -26,10 +25,15 @@ describe('string', function() {
 			expected += '\u5F9E\u7345\u5B50';
 			//Euro sign
 			expected += '\u20AC';
+				if(process.platform == 'linux'){
+		// FIXME: Windows is not OK, I'm not sure why
+
 			assert.equal(expected, get_non_ascii_string(true));
+				}
+					assert.equal(expected, nop(expected));
   });
 
-	}
+	
 
   it('non-ascii strings (not utf8)', function() {
 		addons.string.EMBIND_STD_STRING_IS_UTF8 = false;

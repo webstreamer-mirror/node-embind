@@ -21,12 +21,16 @@ typedef void* class_ptr;
 
 template<typename T>
 struct nomakeup {
-	typedef typename std::remove_cv<T>::type _cv;
 
-	typedef typename std::remove_pointer<_cv>::type   _ptr;
-	typedef typename std::remove_reference<_cv>::type _ref;
-
-	typedef typename std::remove_reference<_ptr>::type type;
+	typedef 
+		typename std::remove_cv < 		
+		typename std::remove_reference<
+		typename std::remove_pointer<
+		T
+		>::type
+		>::type
+		>::type
+		type;
 };
 
 

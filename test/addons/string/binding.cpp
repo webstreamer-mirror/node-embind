@@ -121,18 +121,16 @@ std::string get_non_ascii_string(bool embindStdStringUTF8Support) {
 	}
 }
 
-std::string chinese() {
-	std::string str;
-	//WCharStringToUTF8String(std::wstring(L"�й�"), str);
-	return str;
-}
 
+std::string nop(const std::string& s) {
+	return s;
+}
 EMSCRIPTEN_BINDINGS(binding)
 {
     using namespace emscripten;
 	
 	function("get_non_ascii_string", get_non_ascii_string);
-	function("chinese", chinese);
+	function("nop", nop);
 
 }
 

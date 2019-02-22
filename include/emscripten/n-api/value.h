@@ -13,9 +13,9 @@ struct Convertor {
 	using _T = typename nomakeup<T>::type;
 	
 	using type = 
-		typename std::conditional< std::is_fundamental<_T>::value, typename napi::FundamentalConvertor<T>, 
+		typename std::conditional< std::is_fundamental<_T>::value, typename convertor::Fundamental<T>, 
 		
-		typename std::conditional< std::is_same<_T,std::string>::value, typename napi::StringConvertor<T>,
+		typename std::conditional< std::is_same<_T,std::string>::value, typename convertor::String<T>,
 
 		void>::type
 
