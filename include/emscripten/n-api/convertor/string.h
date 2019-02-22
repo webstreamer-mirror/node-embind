@@ -39,7 +39,7 @@ namespace convertor {
 			}
 		}
 
-		inline static ::napi_value napi_value(napi_env env, type val) {
+		inline static ::napi_value napivalue(napi_env env, type val) {
 			napi_status status;
 			::napi_value res;
 			if (Module::EMBIND_STD_STRING_IS_UTF8) {
@@ -58,7 +58,7 @@ namespace convertor {
 	template<typename T>
 	struct String<const T> : public String<T> {
 		String(napi_env env, ::napi_value val)
-			: String<T>(napi_env env, ::napi_value val)
+			: String<T>(env, val)
 		{}
 	};
 
