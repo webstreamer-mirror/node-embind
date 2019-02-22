@@ -5,9 +5,10 @@ project=string
 platform=linux
 build=./test/addons/build.sh
 _uname=$(uname)
-
+echo $_uname "@@@@@@@@@@@"
 [[ $_uname == MSYS_NT* ]] && platform=windows
-[[ $platform == 'windows' ]] && build='./test/addons/build.cmd'
+[[ $_uname == MINGW*_NT* ]] && platform=windows
+
 
 _build=Yes
 _test=Yes
@@ -41,16 +42,25 @@ echo "===================================="
 echo "    project : $project              "
 echo "    Build   : $_build               "
 echo "    Test    : $_test                "
+echo "    NODE_ENV: $NODE_ENV             "
+echo "    Platform: $platform             "
 echo "===================================="
 
 
 cd $__dir__/..
 
-if [ $project == '*' ]; then
-  [[ $_build == Yes ]] && $build
-else
-  [[ $_build == Yes ]] && $build $project
+
+if [[ $_build == Yes ]];then
+  _project=$project
+  [[ $project == '*' ]] && _project=
+  
+  if [[ $platform == 'windows' ]]; then
+	cmd.exe /C ".\\test\\addons\\build.cmd $project"
+  else
+	bash ./test/addons/build.sh $_project
+  fi
 fi
+
 ret=$?
 [ $_build == Yes ] && [ $ret -ne 0 ] && echo "Build failed !" && exit 1
 
