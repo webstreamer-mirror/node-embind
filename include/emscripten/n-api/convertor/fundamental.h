@@ -23,7 +23,7 @@ namespace convertor {
 			NODE_EMBIND_ERROR_NAPICALL_CHECK(env, status);
 		}
 
-		inline static napi_value napi_value(napi_env env, type val) {
+		inline static napi_value napivalue(napi_env env, type val) {
 			napi_status status;
 			::napi_value res;
 			status  = napi_get_boolean(env, val, &res);
@@ -50,7 +50,7 @@ namespace convertor {
 			NODE_EMBIND_ERROR_NAPICALL_CHECK(env, status);
 		}
 
-		inline static napi_value napi_value(napi_env env, type val) {
+		inline static napi_value napivalue(napi_env env, type val) {
 			napi_status status;
 			::napi_value res;
 			if (sizeof(int) == 64) {
@@ -78,7 +78,7 @@ namespace convertor {
 			NODE_EMBIND_ERROR_NAPICALL_CHECK(env, status);
 		}
 
-		inline static napi_value napi_value(napi_env env, type val) {
+		inline static napi_value napivalue(napi_env env, type val) {
 			napi_status status;
 			::napi_value res;
 			status =napi_create_double(env, (double)val, &res);
@@ -100,7 +100,7 @@ namespace convertor {
 			NODE_EMBIND_ERROR_NAPICALL_CHECK(env, status);
 		}
 
-		inline static napi_value napi_value(napi_env env, type val) {
+		inline static napi_value napivalue(napi_env env, type val) {
 			napi_status status;
 			::napi_value res;
 			status = napi_create_double(env, (double)val, &res);
@@ -122,7 +122,7 @@ namespace convertor {
 			NODE_EMBIND_ERROR_NAPICALL_CHECK(env, status);
 		}
 
-		inline static napi_value napi_value(napi_env env, type val) {
+		inline static napi_value napivalue(napi_env env, type val) {
 			napi_status status;
 			::napi_value res;
 			status = napi_create_int64(env, val, &res);
@@ -143,7 +143,7 @@ namespace convertor {
 			NODE_EMBIND_ERROR_NAPICALL_CHECK(env, status);
 		}
 
-		inline static napi_value napi_value(napi_env env, type val) {
+		inline static napi_value napivalue(napi_env env, type val) {
 			napi_status status;
 			::napi_value res;
 			status = napi_create_int64(env, val, &res);
