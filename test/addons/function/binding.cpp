@@ -19,7 +19,9 @@ int   Sum(int a, int b, int c) { return a + b + c; }
 double Sum(double a, double b) { return a + b; }
 double Sum(double a, double b, double c) { return a + b + c; }
 
-
+int _value = 0;
+void Set(int v) { _value = v; }
+int  Get() { return _value; }
 
 EMSCRIPTEN_BINDINGS(binding)
 {
@@ -29,6 +31,8 @@ EMSCRIPTEN_BINDINGS(binding)
     function("intSum", select_overload<int(int, int,int)>(&Sum));
 	function("doubleSum", select_overload<double(double, double)>(&Sum));
 	function("doubleSum", select_overload<double(double, double, double)>(&Sum));
+	function("Set",Set);
+	function("Get",Get);
 }
 
 #ifdef EMSCRIPTEN_NODE_EMBIND
