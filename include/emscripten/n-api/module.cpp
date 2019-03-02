@@ -10,6 +10,34 @@
 NS_NAPI_BEGIN
 
 bool Module::EMBIND_STD_STRING_IS_UTF8 = false;
+bool Module::GARBAGE_CLEANING = true;
+
+napi_value Module::Init(napi_env env, napi_value exports) {
+	module_t& m = node_module();
+
+	Preprocess(m.functions);
+
+	auto prop = make_napi_property_table(m.functions);
+
+	prop.push_back({ "EMBIND_STD_STRING_IS_UTF8", nullptr,nullptr,
+		EMBIND_STD_STRING_IS_UTF8_getter, EMBIND_STD_STRING_IS_UTF8_setter,
+		nullptr,napi_default,nullptr });
+
+	napi_define_properties(env, exports, prop.size(), prop.data());
+
+	std::map<TYPEID, class_t*>& classes = m.classes;
+	for (std::map<TYPEID, class_t*>::iterator it = classes.begin();
+		it != classes.end(); it++) {
+		class_t* c = it->second;
+
+		Register(c, env, exports);
+
+	}
+
+
+
+	return exports;
+}
 
 
 //====================================
@@ -18,15 +46,14 @@ bool Module::EMBIND_STD_STRING_IS_UTF8 = false;
 
 void register_function(
 	const char* name,
-	unsigned argCount,
-	const TYPEID argTypes[],
+	unsigned argc,
 	GenericFunction invoker,
 	GenericFunction function)
 {
 	module_t& m = node_module();
 	function_t* f = new function_t();
 	f->name = name;
-	f->argc = argCount - 1;
+	f->argc = argc;
 	typedef napi_value(*Fn)(const function_t*, const context_t&);
 
 	f->invoke = (Fn)invoker;
@@ -34,6 +61,43 @@ void register_function(
 	f->function = function;
 	m.functions.push_back(f);
 }
+
+
+void register_class(
+	const char* name,
+	TYPEID classType,
+	GenericFunction New,
+	GenericFunction Delete)
+{
+
+	module_t& m = node_module();
+	class_t* c = new class_t();
+	c->name = name;
+
+	typedef napi_value (*Fn)(napi_env, napi_callback_info);
+	c->New = (Fn)(New);
+	c->Delete = (Fn)(Delete);
+	m.classes[classType] = c;
+	
+}
+
+void register_class_constructor(
+	TYPEID classType,
+	unsigned argc,
+	GenericFunction invoker,
+	GenericFunction function)
+{
+	module_t& m = node_module();
+	constructor_t* ctor = new constructor_t();
+	ctor->argc = argc;
+
+	typedef class_ptr(*Fn) (const constructor_t*, const context_t&);
+	ctor->invoke = (Fn)(invoker);
+	ctor->function = function;
+
+	m.classes[classType]->ctors.push_back(ctor);
+}
+
 
 
 NS_NAPI_END

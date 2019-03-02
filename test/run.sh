@@ -50,11 +50,11 @@ echo "===================================="
 cd $__dir__/..
 
 _project=$project
-[[ $project == 'all' ]] && _project=
+_addon=$project
+[[ $project == 'all' ]] && _project= && _addon='*'
 
 
 if [[ $_build == Yes ]];then
-  
   if [[ $platform == 'windows' ]]; then
 	cmd.exe /C ".\\test\\addons\\build.cmd $_project"
   else

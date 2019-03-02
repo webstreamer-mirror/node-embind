@@ -153,17 +153,134 @@ namespace emscripten {
 
 		using namespace internal;
 
-		typename WithPolicies<Policies...>::template ArgTypeList<ReturnType, Args...> args;
 		auto invoker = &Invoker<ReturnType, Args...>::invoke;
 
 		napi::register_function(
 			name,
-			args.getCount(),
-			args.getTypes(),
+			sizeof...(Args),
 			reinterpret_cast<GenericFunction>(invoker),
 			reinterpret_cast<GenericFunction>(fn));
 
 	}
+
+
+
+	namespace internal {
+		template<typename ClassType, typename... Args>
+		ClassType* operator_new(Args&&... args) {
+			return new ClassType(std::forward<Args>(args)...);
+		}
+
+		template<typename WrapperType, typename ClassType, typename... Args>
+		WrapperType wrapped_new(Args&&... args) {
+			return WrapperType(new ClassType(std::forward<Args>(args)...));
+		}
+
+		//template<typename ClassType, typename... Args>
+		//ClassType* raw_constructor(
+		//	typename internal::BindingType<Args>::WireType... args
+		//) {
+		//	return new ClassType(
+		//		internal::BindingType<Args>::fromWireType(args)...
+		//	);
+		//}
+
+		template<typename ClassType>
+		void raw_destructor(ClassType* ptr) {
+			delete ptr;
+		}
+	}
+
+    namespace internal {
+        struct NoBaseClass {
+            template<typename ClassType>
+            static void verify() {
+            }
+
+            static TYPEID get() {
+                return nullptr;
+            }
+
+            template<typename ClassType>
+            static VoidFunctionPtr getUpcaster() {
+                return nullptr;
+            }
+
+            template<typename ClassType>
+            static VoidFunctionPtr getDowncaster() {
+                return nullptr;
+            }
+        };
+
+        // NOTE: this returns the class type, not the pointer type
+        template<typename T>
+        inline TYPEID getActualType(T* ptr) {
+            return getLightTypeID(*ptr);
+        };
+    }
+
+
+
+	namespace internal {
+		template<typename ClassType, typename... Args>
+		struct ConstructorInvoker {
+
+			typedef ClassType* (*Fn)(Args...);
+			typedef napi::Invoker<ClassType*, Args...> I;
+			static void* invoke(const napi::constructor_t* self, const napi::context_t& ctx)
+			{
+				assert(ctx.argc == sizeof...(Args));
+				return I::invoke(ctx.env, ctx.argv, (Fn)self->function);
+			}
+		};
+	}
+
+
+    template<typename ClassType, typename BaseSpecifier = internal::NoBaseClass>
+    class class_ {
+    public:
+        typedef ClassType class_type;
+        typedef BaseSpecifier base_specifier;
+
+        class_() = delete;
+
+        explicit class_(const char* name) {
+            using namespace internal;
+
+            BaseSpecifier::template verify<ClassType>();
+
+			auto New = napi::Class<ClassType>::New;
+			auto Delete = napi::Class<ClassType>::Delete;
+
+            napi::register_class(
+				name,
+                TypeID<ClassType>::get(),
+                reinterpret_cast<GenericFunction>(New),
+				reinterpret_cast<GenericFunction>(Delete)
+				);
+        }
+
+		template<typename... ConstructorArgs, typename... Policies>
+		inline const class_& constructor(Policies... policies) const {
+			return constructor(
+				&internal::operator_new<ClassType, ConstructorArgs...>,
+				policies...);
+		}
+
+		template<typename... Args, typename ReturnType, typename... Policies>
+		inline const class_& constructor(ReturnType(*factory)(Args...), Policies...) const {
+			using namespace internal;
+
+			auto invoke = &ConstructorInvoker<ClassType, Args...>::invoke;
+			napi::register_class_constructor(
+				TypeID<ClassType>::get(),
+				sizeof...(Args),
+				reinterpret_cast<GenericFunction>(invoke),
+				reinterpret_cast<GenericFunction>(factory));
+			return *this;
+		}
+	};
+
 
 }
 

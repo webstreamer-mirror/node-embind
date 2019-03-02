@@ -1,15 +1,23 @@
 console.log("[debug.js] BEGIN.")
 /********************* Begin **********************/
 const Addons=require('./addons')
-const addon = Addons.string;
+const addon = Addons.class;
 /********************* Loaded *********************/
-console.log('EMBIND_STD_STRING_IS_UTF8 :', addon.EMBIND_STD_STRING_IS_UTF8);
-addon.EMBIND_STD_STRING_IS_UTF8 = false;
+console.log(addon.Empty)
+var marker = addon.marker();
+console.log(`1. marker = ${marker}`)
+let e = new addon.Empty();
+marker = addon.marker();
+console.log(`2. marker = ${marker}`)
+e.delete();
+marker = addon.marker();
+console.log(`3. marker = ${marker}`)
 
-var n = addon.int_to_string('2018');
+e = undefined;
 
-
-
-
+setTimeout(function () {
+    console.log('end');
+  }, 1000);
+  
 /********************* END **********************/
 console.log("[debug.js] End.")

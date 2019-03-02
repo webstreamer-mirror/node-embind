@@ -12,6 +12,7 @@
 #include <node_api.h>
 
 
+
 #define NS_NAPI_BEGIN namespace emscripten { namespace internal { namespace napi {
 #define NS_NAPI_END   }}}
 
