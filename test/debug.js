@@ -3,21 +3,13 @@ console.log("[debug.js] BEGIN.")
 const Addons=require('./addons')
 const addon = Addons.class;
 /********************* Loaded *********************/
-console.log(addon.Empty)
-var marker = addon.marker();
-console.log(`1. marker = ${marker}`)
-let e = new addon.Empty();
-marker = addon.marker();
-console.log(`2. marker = ${marker}`)
-e.delete();
-marker = addon.marker();
-console.log(`3. marker = ${marker}`)
-
-e = undefined;
-
-setTimeout(function () {
-    console.log('end');
-  }, 1000);
-  
+var C=addon.GlobalFunction_Tester
+var marker = addon.marker
+marker(100);
+console.log(C)
+console.log(marker())
+var c = new C()
+console.log(marker())
+console.log(c,"@@",c.member)  
 /********************* END **********************/
 console.log("[debug.js] End.")

@@ -11,7 +11,7 @@
 
 #include <node_api.h>
 
-
+#define EMSCRIPTEN_ALWAYS_INLINE inline
 
 #define NS_NAPI_BEGIN namespace emscripten { namespace internal { namespace napi {
 #define NS_NAPI_END   }}}

@@ -13,7 +13,12 @@
 #define NODE_EMBIND_ERROR_ARGC_MSG "No overload function matched the parameter count."
 #define NODE_EMBIND_ERROR_CTOR_ARGC_MSG "No constructor matched the parameter count."
 
-
+#define NODE_EMBIND_ERROR_INVALID_INSTANCE     "10101"
+#define NODE_EMBIND_ERROR_INVALID_INSTANCE_MSG "Invalid instance from wraped object."
+#define NODE_EMBIND_ERROR_INVALID_INSTANCE_CHECK(env,instance)\
+	if (!instance) {\
+       ::napi_throw_error(env, NODE_EMBIND_ERROR_INVALID_INSTANCE, NODE_EMBIND_ERROR_INVALID_INSTANCE_MSG);\
+	}
 inline static const char* _node_embind_napi_call_error(napi_status status) {
 	switch (status)
 	{

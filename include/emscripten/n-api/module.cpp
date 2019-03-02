@@ -100,6 +100,29 @@ void register_class_constructor(
 
 
 
+void register_class_property(
+	TYPEID classType,
+	const char* fieldName,
+	GenericFunction getter,
+	void* getterContext,
+	GenericFunction setter,
+	void* setterContext)
+{
+	module_t& m = node_module();
+	property_t* prop = new property_t;
+	prop->name = fieldName;
+
+	typedef napi_value(*Setter)(const property_t*, const context_t&);
+	prop->setter = (Setter)setter;
+	prop->setter_context = setterContext;
+
+	typedef napi_value(*Getter)(const property_t*, const context_t&);
+
+	prop->getter = (Getter)getter;
+	prop->getter_context = getterContext;
+	m.classes[classType]->property.push_back(prop);
+}
+
 NS_NAPI_END
 
 

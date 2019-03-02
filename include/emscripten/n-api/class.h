@@ -2,6 +2,7 @@
 #define _NODE_EMBIND_EMSCRIPTEN_NAPI_CLASS_H_
 
 #include <emscripten/n-api/common.h>
+#include <emscripten/n-api/property.h>
 
 NS_NAPI_BEGIN
 
@@ -28,8 +29,8 @@ NS_NAPI_BEGIN
 		napi_ref ref;      // reference use to hold ctor
 
 		std::list<constructor_t*> ctors;
-		//std::list<function_t*> function;
-		//std::list<property_t*> property;
+		std::list<function_t*> function;
+		std::list<property_t*> property;
 	};
 
 
@@ -151,6 +152,15 @@ NS_NAPI_BEGIN
         std::vector<napi_property_descriptor> prop;
 
 		prop.push_back({ "delete",nullptr,prototype->Delete,nullptr,nullptr,nullptr,napi_default,nullptr });
+		for (std::list<property_t*>::iterator it = prototype->property.begin();
+			it != prototype->property.end(); it++) {
+			const char* name = (*it)->name;			
+			napi_callback getter = (*it)->getter ? &napi_getter : nullptr;
+			napi_callback setter = (*it)->setter ? &napi_setter : nullptr;
+
+			prop.push_back({name,nullptr,nullptr,getter,setter,	0,napi_default,*it});
+		}
+
 
         napi_define_class(env, prototype->name, NAPI_AUTO_LENGTH , 
 			prototype->New, prototype,
