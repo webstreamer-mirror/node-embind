@@ -149,42 +149,8 @@ NS_NAPI_BEGIN
     static void Register(class_t* prototype, napi_env env, napi_value exports)
     {
         std::vector<napi_property_descriptor> prop;
-        
-        //for (std::list<property_t*>::iterator it = desc->property.begin();
-        //    it != desc->property.end(); it++) {
-		//
-        //    napi_property_descriptor desc = {
-        //        (*it)->name,
-        //        nullptr,nullptr,
-        //        (*it)->getter ? &napi_getter : nullptr,
-        //        (*it)->setter ? &napi_setter : nullptr,
-        //        0,napi_default,*it
-        //    };
-        //    prop.push_back(desc);
-        //}
-		//
-        //for (std::list<function_t*>::iterator it = prototype->function.begin();
-        //    it != prototype->function.end(); it++) {
-        //    napi_property_descriptor desc = {
-        //        (*it)->name,
-        //        nullptr,
-        //        napi_method,
-        //        nullptr,nullptr,
-        //        0,/*napi_default*/(*it)->attributes,*it
-        //    };
-        //    prop.push_back(desc);
-        //}
-		prop.push_back({ "delete",nullptr,prototype->Delete,nullptr,nullptr,nullptr,napi_default,nullptr });
-		//        (*it)->name,
-		//        nullptr,
-		//        napi_method,
-		//        nullptr,nullptr,
-		//        0,/*napi_default*/(*it)->attributes,*it
-		//    };
 
-//        IClass* obj = new IClass(desc);
-		//napi_value& ctor = prototype->ctor;
-		
+		prop.push_back({ "delete",nullptr,prototype->Delete,nullptr,nullptr,nullptr,napi_default,nullptr });
 
         napi_define_class(env, prototype->name, NAPI_AUTO_LENGTH , 
 			prototype->New, prototype,

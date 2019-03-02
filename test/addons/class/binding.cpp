@@ -14,11 +14,9 @@ void marker(int v) { marker_ = v; }
 class Empty {
 public:
 	Empty() {
-		std::cout << "Empty::Empty()" << std::endl;
 		marker_++;
 	}
 	~Empty() {
-		std::cout << "Empty::~Empty()" << std::endl;
 		marker_--;
 	}
 };
