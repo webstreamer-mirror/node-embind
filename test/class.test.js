@@ -110,19 +110,31 @@ describe('class', function () {
     });
 
     describe('.function', function () {
-        it('ctor()', function () {
-            var count = marker();
-            var c = new Empty();
-            assert.strictEqual(marker(), count + 1);
+        it('MemberInoker', function () {
+            var c = new Function();
+            c.set(123)
+            assert.strictEqual(c.get(), 123);
+
+            c.set(321)
+            assert.strictEqual(c.get(), 321);
+            
+            var sum =c.addmore(50000,4000)
+            assert.strictEqual(sum, 54321);
             c.delete();
         });
         
-        it('delete', function () {
-            var count = marker();
-            var c = new Empty();
-            assert.strictEqual(marker(), count + 1);
+        it('FunctionInvoker', function () {
+            var c = new Function();
+            c.Set(123)
+            assert.strictEqual(c.Get(), 123);
+
+            c.Set(321)
+            assert.strictEqual(c.Get(), 321);
+            
+            var sum =c.AddMore(50000,4000)
+            assert.strictEqual(sum, 54321);
             c.delete();
-            assert.strictEqual(marker(), count);
+
         });
     });
 

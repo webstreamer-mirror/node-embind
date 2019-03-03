@@ -81,7 +81,9 @@ public:
     int  get() const { return member; }
     int  addmore(int v1, int v2) // use to test 3 param functions
     {
-        return member + v1 + v2;
+        int sum = (member + v1 + v2);
+        
+        return sum;
     }
 };
 void fnSet(Function& f, int value) {
