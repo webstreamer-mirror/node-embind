@@ -11,16 +11,7 @@ environment:
    
     matrix:
         - nodejs_arch: x64
-#
-#        - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-#          nodejs_version: x86
-#
-#install:
-#  - set PATH=%PATH%;%PYTHON%/Scripts/
-#  - pip.exe install conan --upgrade
-#  - pip.exe install conan_package_tools
-#  - pip.exe install conanos  --upgrade
-#  - conan user # It creates the conan data directory
+        - nodejs_arch: x86
 
 install:
   - ps: Install-Product node $env:nodejs_version $env:nodejs_arch
