@@ -31,5 +31,6 @@ test_script:
   - node -e "console.log( process.arch )"
   - npm --version  
   - python --version
-  
+  - npm run build
+  - npm run test || type build.log
 
