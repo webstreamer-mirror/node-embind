@@ -1,0 +1,10 @@
+
+#ifndef _NODE_EMBIND_EMSCRIPTEN_EMSCRIPTEN_H_
+#define _NODE_EMBIND_EMSCRIPTEN_EMSCRIPTEN_H_
+
+// EMBIND_STD_STRING_IS_UTF8
+
+#include "em_asm.h"
+#include "em_js.h"
+
+#endif // !_NODE_EMBIND_EMSCRIPTEN_EMSCRIPTEN_H_

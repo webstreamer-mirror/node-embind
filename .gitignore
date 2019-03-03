@@ -1,0 +1,9 @@
+build
+*.pyc
+activate*
+deactivate*
+conanbuild*
+test_package/build
+node_modules
+build.log
+
