@@ -6,8 +6,9 @@ const addon = Addons.class;
 var C=addon.Function
 console.log(C)
 var c = new C()
-var sum =c.addmore(50000,00000)
-console.log(sum,'<----')
+console.log('a) ',c.Get());
+//var sum =c.addmore(50000,00000)
+//console.log(sum,'<----')
 //console.log(marker())
 //console.log(c,"@@",c.set(0))  
 /********************* END **********************/

@@ -206,10 +206,9 @@ namespace emscripten {
 
                 NODE_EMBIND_ERROR_INVALID_INSTANCE_CHECK(ctx.env, self->instance);
 
-                I::invoke<ClassType>(ctx.env, ctx.argv, self->instance, fn);
-                //napi::value<ClassType>::napivalue(ctx.env,
-                //    I::invoke(ctx.env, ctx.argv, self->instance, fn));
-                return nullptr;
+                
+                return napi::value<ReturnType>::napivalue(ctx.env,
+                    I::invoke(ctx.env, ctx.argv, self->instance, fn));
             }
         };
 
@@ -227,8 +226,7 @@ namespace emscripten {
                 NODE_EMBIND_ERROR_NAPICALL_CHECK(ctx.env, status);
         
                 NODE_EMBIND_ERROR_INVALID_INSTANCE_CHECK(ctx.env, self->instance);
-                I::invoke<ClassType>(ctx.env, ctx.argv, self->instance, fn);
-                //napi::value<ClassType>::napivalue(ctx.env,)
+                I::invoke(ctx.env, ctx.argv, self->instance, fn);
                 return nullptr;
             }
         };
@@ -616,7 +614,7 @@ namespace emscripten {
                 methodName,
                 sizeof...(Args),
                 reinterpret_cast<GenericFunction>(invoker),
-                getContext(function),
+                function,
                 isPureVirtual<Policies...>::value);
             return *this;
         }
