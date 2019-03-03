@@ -6,11 +6,15 @@ branches:
 
 environment:
     PYTHON: "C:\Python27-x64"
-    nodejs_version: "11"
+    nodejs_version: "10"
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+   
     matrix:
+        - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+          nodejs_version: x64
 
         - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-          NODE_ARCH: x86_64
+          nodejs_version: x86
 
 #install:
 #  - set PATH=%PATH%;%PYTHON%/Scripts/
