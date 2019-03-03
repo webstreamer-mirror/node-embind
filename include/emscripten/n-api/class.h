@@ -48,10 +48,10 @@ NS_NAPI_BEGIN
 	};
 
     template<typename ClassType>
-    struct Class //: public IClass 
+    struct Class
 	{
 		class_t* prototype;
-		ClassType*    instance;
+		ClassType* instance;
 		napi_ref ref;
 
 		Class() : prototype(nullptr), instance(nullptr), ref(nullptr)
@@ -161,6 +161,17 @@ NS_NAPI_BEGIN
 			prop.push_back({name,nullptr,nullptr,getter,setter,	0,napi_default,*it});
 		}
 
+        for (std::list<function_t*>::iterator it = prototype->function.begin();
+            it != prototype->function.end(); it++) {
+            napi_property_descriptor desc = {
+                (*it)->name,
+                nullptr,
+                napi_method,
+                nullptr,nullptr,
+                0,/*napi_default*/(*it)->attributes,*it
+            };
+            prop.push_back(desc);
+        }
 
         napi_define_class(env, prototype->name, NAPI_AUTO_LENGTH , 
 			prototype->New, prototype,

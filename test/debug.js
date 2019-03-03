@@ -3,13 +3,11 @@ console.log("[debug.js] BEGIN.")
 const Addons=require('./addons')
 const addon = Addons.class;
 /********************* Loaded *********************/
-var C=addon.GlobalFunction_Tester
-var marker = addon.marker
-marker(100);
+var C=addon.Function
 console.log(C)
-console.log(marker())
 var c = new C()
-console.log(marker())
-console.log(c,"@@",c.member)  
+c.Get();
+//console.log(marker())
+//console.log(c,"@@",c.set(0))  
 /********************* END **********************/
 console.log("[debug.js] End.")

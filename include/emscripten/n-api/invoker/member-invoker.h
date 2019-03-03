@@ -48,6 +48,23 @@ struct MemberInvoker <ReturnType, T0>
     }
 };
 
+template<typename ReturnType, typename T0, typename T1>
+struct MemberInvoker <ReturnType, T0, T1>
+{
+    template<typename ClassType>
+    inline static ReturnType invoke(napi_env env, napi_value argv[], ClassType* inst,
+        ReturnType(ClassType::*fn)(T0,T1)) {
+
+        return  (inst->*fn)(_arg(0),_arg(1));
+    }
+
+    template<typename ClassType>
+    inline static ReturnType invoke(napi_env env, napi_value argv[], ClassType* inst,
+        ReturnType(ClassType::*fn)(T0,T1) const) {
+        return  (inst->*fn)(_arg(0),_arg(1));
+    }
+};
+
 
 NS_NAPI_END
 

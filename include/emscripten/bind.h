@@ -191,6 +191,97 @@ namespace emscripten {
         }
         */
 
+        template<typename FunctionPointerType, typename ReturnType, typename ThisType, typename... Args>
+        struct FunctionInvoker {
+
+            typedef napi::FunctionInvoker<ReturnType, Args...> I;
+            static napi_value invoke(const napi::function_t* prototype, const napi::context_t& ctx) {
+                FunctionPointerType fn = static_cast<FunctionPointerType>(prototype->function);
+
+                using ClassType = napi::nomakeup<ThisType>::type;
+                napi::Class<ClassType>* self = nullptr;
+
+                napi_status status = napi_unwrap(ctx.env, ctx.js, reinterpret_cast<void**>(&self));
+                NODE_EMBIND_ERROR_NAPICALL_CHECK(ctx.env, status);
+
+                NODE_EMBIND_ERROR_INVALID_INSTANCE_CHECK(ctx.env, self->instance);
+
+                I::invoke<ClassType>(ctx.env, ctx.argv, self->instance, fn);
+                //napi::value<ClassType>::napivalue(ctx.env,
+                //    I::invoke(ctx.env, ctx.argv, self->instance, fn));
+                return nullptr;
+            }
+        };
+
+        template<typename FunctionPointerType, typename ThisType, typename... Args>
+        struct FunctionInvoker<FunctionPointerType, void, ThisType, Args...> {
+        
+            typedef napi::FunctionInvoker<void, Args...> I;
+            static napi_value invoke(const napi::function_t* prototype, const napi::context_t& ctx)
+            {
+                FunctionPointerType fn = static_cast<FunctionPointerType>(prototype->function);
+                using ClassType = napi::nomakeup<ThisType>::type;
+                napi::Class<ClassType>* self = nullptr;
+        
+                napi_status status = napi_unwrap(ctx.env, ctx.js, reinterpret_cast<void**>(&self));
+                NODE_EMBIND_ERROR_NAPICALL_CHECK(ctx.env, status);
+        
+                NODE_EMBIND_ERROR_INVALID_INSTANCE_CHECK(ctx.env, self->instance);
+                I::invoke<ClassType>(ctx.env, ctx.argv, self->instance, fn);
+                //napi::value<ClassType>::napivalue(ctx.env,)
+                return nullptr;
+            }
+        };
+
+
+
+        template<typename MemberPointer,
+            typename ReturnType,
+            typename ThisType,
+            typename... Args>
+            struct MethodInvoker {
+
+            typedef napi::MemberInvoker<ReturnType, Args...> I;
+
+            static napi_value invoke(const napi::function_t* prototype, const napi::context_t& ctx)
+            {
+                const MemberPointer& method = *static_cast<MemberPointer*>(prototype->function);
+
+                using ClassType = napi::nomakeup<ThisType>::type;
+                napi::Class<ClassType>* self = nullptr;
+
+                napi_status status = napi_unwrap(ctx.env, ctx.js, reinterpret_cast<void**>(&self));
+                NODE_EMBIND_ERROR_NAPICALL_CHECK(ctx.env, status);
+
+                NODE_EMBIND_ERROR_INVALID_INSTANCE_CHECK(ctx.env, self->instance);
+
+                return napi::value<ReturnType>::napivalue(ctx.env,
+                    I::invoke(ctx.env, ctx.argv, self->instance, method));
+            }
+        };
+
+        template<typename MemberPointer,
+            typename ThisType,
+            typename... Args>
+            struct MethodInvoker<MemberPointer, void, ThisType, Args...> {
+
+            typedef napi::MemberInvoker<void, Args...> I;
+
+            static napi_value invoke(const napi::function_t* prototype, const napi::context_t& ctx)
+            {
+                const MemberPointer& method = *static_cast<MemberPointer*>(prototype->function);
+                
+                using ClassType = napi::nomakeup<ThisType>::type;
+                napi::Class<ClassType>* self = nullptr;
+
+                napi_status status = napi_unwrap(ctx.env, ctx.js, reinterpret_cast<void**>(&self));
+                NODE_EMBIND_ERROR_NAPICALL_CHECK(ctx.env, status);
+
+                NODE_EMBIND_ERROR_INVALID_INSTANCE_CHECK(ctx.env, self->instance);
+                I::invoke<ClassType>(ctx.env, ctx.argv, self->instance, method);
+                return nullptr;
+            }
+        };
 
         template<typename InstanceType, typename MemberType>
         struct MemberAccess {
@@ -353,7 +444,7 @@ namespace emscripten {
 
                 context(*self->instance,
                     napi::value<SetterArgumentType>(ctx.env, ctx.argv[0]).value);
-                    //napi::Value<SetterArgumentType>(ctx.env).native_cast(ctx.argv[0]));
+                //napi::Value<SetterArgumentType>(ctx.env).native_cast(ctx.argv[0]));
                 return nullptr;
             }
 
@@ -362,28 +453,11 @@ namespace emscripten {
                 return internal::getContext(context);
             }
         };
-      /*
-        
-
-        template<typename SetterThisType, typename SetterArgumentType>
-        struct SetterPolicy<void(*)(SetterThisType&, SetterArgumentType)> {
-            typedef SetterArgumentType ArgumentType;
-            typedef void(*Context)(SetterThisType&, SetterArgumentType);
-
-            typedef internal::BindingType<SetterArgumentType> Binding;
-            typedef typename Binding::WireType WireType;
-
-            template<typename ClassType>
-            static void set(const Context& context, ClassType& ptr, WireType wt) {
-                context(ptr, Binding::fromWireType(wt));
-            }
-
-            static void* getContext(Context context) {
-                return internal::getContext(context);
-            }
-        };
-        */
     }
+
+    ////////////////////////////////////////////////////////////////////////////////
+    // CLASSES
+    ////////////////////////////////////////////////////////////////////////////////
 
     namespace internal {
         struct NoBaseClass {
@@ -413,7 +487,32 @@ namespace emscripten {
         };
     }
 
+    struct pure_virtual {
+        template<typename InputType, int Index>
+        struct Transform {
+            typedef InputType type;
+        };
+    };
 
+    namespace internal {
+        template<typename... Policies>
+        struct isPureVirtual;
+
+        template<typename... Rest>
+        struct isPureVirtual<pure_virtual, Rest...> {
+            static constexpr bool value = true;
+        };
+
+        template<typename T, typename... Rest>
+        struct isPureVirtual<T, Rest...> {
+            static constexpr bool value = isPureVirtual<Rest...>::value;
+        };
+
+        template<>
+        struct isPureVirtual<> {
+            static constexpr bool value = false;
+        };
+    }
 
     namespace internal {
         template<typename ClassType, typename... Args>
@@ -474,6 +573,53 @@ namespace emscripten {
             return *this;
         }
 
+
+        template<typename ReturnType, typename... Args, typename... Policies>
+        EMSCRIPTEN_ALWAYS_INLINE const class_& function(const char* methodName, ReturnType(ClassType::*memberFunction)(Args...), Policies...) const {
+            using namespace internal;
+
+            auto invoker = &MethodInvoker<decltype(memberFunction), ReturnType, ClassType*, Args...>::invoke;
+
+            //typename WithPolicies<Policies...>::template ArgTypeList<ReturnType, AllowedRawPointer<ClassType>, Args...> args;
+            napi::register_class_function(
+                TypeID<ClassType>::get(),
+                methodName,
+                sizeof...(Args),
+                reinterpret_cast<GenericFunction>(invoker),
+                getContext(memberFunction),
+                isPureVirtual<Policies...>::value);
+            return *this;
+        }
+        template<typename ReturnType, typename... Args, typename... Policies>
+        EMSCRIPTEN_ALWAYS_INLINE const class_& function(const char* methodName, ReturnType(ClassType::*memberFunction)(Args...) const, Policies...) const {
+            using namespace internal;
+
+            auto invoker = &MethodInvoker<decltype(memberFunction), ReturnType, const ClassType*, Args...>::invoke;
+
+            napi::register_class_function(
+                TypeID<ClassType>::get(),
+                methodName,
+                sizeof...(Args),
+                reinterpret_cast<GenericFunction>(invoker),
+                getContext(memberFunction),
+                isPureVirtual<Policies...>::value);
+            return *this;
+        }
+
+        template<typename ReturnType, typename ThisType, typename... Args, typename... Policies>
+        EMSCRIPTEN_ALWAYS_INLINE const class_& function(const char* methodName, ReturnType(*function)(ThisType, Args...), Policies...) const {
+            using namespace internal;
+
+            auto invoker = &FunctionInvoker<decltype(function), ReturnType, ThisType, Args...>::invoke;
+            napi::register_class_function(
+                TypeID<ClassType>::get(),
+                methodName,
+                sizeof...(Args),
+                reinterpret_cast<GenericFunction>(invoker),
+                getContext(function),
+                isPureVirtual<Policies...>::value);
+            return *this;
+        }
 
 
         template<typename FieldType, typename = typename std::enable_if<!std::is_function<FieldType>::value>::type>

@@ -123,6 +123,26 @@ void register_class_property(
 	m.classes[classType]->property.push_back(prop);
 }
 
+
+
+void register_class_function(
+    TYPEID classType,
+    const char* methodName,
+    unsigned argCount,
+    GenericFunction invoker,
+    void* context,
+    unsigned isPureVirtual)
+{
+    module_t& m = node_module();
+    function_t* fn = new function_t();
+    fn->argc = argCount - 1;
+    fn->name = methodName;
+    typedef napi_value(*Fn)(const function_t*, const context_t&);
+    fn->invoke = (Fn)(invoker);
+    fn->function = context;
+    m.classes[classType]->function.push_back(fn);
+}
+
 NS_NAPI_END
 
 

@@ -12,7 +12,8 @@ describe('class', function () {
         MemberFunction_GetterOnly,
         GlobalFunction_GetterTester,
         MemberFunction,
-        GlobalFunction
+        GlobalFunction,
+        Function
     } = addons.class;
 
     describe('#ctor/delete', function () {
@@ -106,6 +107,23 @@ describe('class', function () {
 
             c.delete();
         });        
+    });
+
+    describe('.function', function () {
+        it('ctor()', function () {
+            var count = marker();
+            var c = new Empty();
+            assert.strictEqual(marker(), count + 1);
+            c.delete();
+        });
+        
+        it('delete', function () {
+            var count = marker();
+            var c = new Empty();
+            assert.strictEqual(marker(), count + 1);
+            c.delete();
+            assert.strictEqual(marker(), count);
+        });
     });
 
 });

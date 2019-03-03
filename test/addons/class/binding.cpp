@@ -69,6 +69,32 @@ void GlobalFunctionSetter(GlobalFunction& m, int value) {
     m.member=value;
 }
 
+//
+// .function
+//
+
+class Function {
+public:
+    int member;
+
+    void set(int value) { member = value; }
+    int  get() const { return member; }
+    int  addmore(int v1, int v2) // use to test 3 param functions
+    {
+        return member + v1 + v2;
+    }
+};
+void fnSet(Function& f, int value) {
+    f.set(value);
+}
+int fnGet(Function& f) {
+    return f.get();
+}
+int  fnAddMore(Function& f,int v1, int v2) // use to test 3 param functions
+{
+    return f.addmore(v1, v2);
+}
+
 EMSCRIPTEN_BINDINGS(binding)
 {
 	using namespace emscripten;
@@ -107,6 +133,16 @@ EMSCRIPTEN_BINDINGS(binding)
         .constructor<>()
         .property("member_", &GlobalFunction::member) // as operator
         .property("member", &GlobalFunctionGetter , &GlobalFunctionSetter)
+        ;
+
+    class_<Function>("Function")
+        .constructor<>()
+        .function("get", &Function::get)
+        .function("set", &Function::set)
+        .function("addmore", &Function::addmore)
+        .function("Get", &fnGet)
+        .function("Set", &fnSet)
+        .function("AddMore", &fnAddMore)
         ;
 }
 
