@@ -4,8 +4,8 @@
 #include <emscripten/n-api/common.h>
 #include <emscripten/n-api/property.h>
 
-NS_NAPI_BEGIN
 
+NS_NAPI_BEGIN
 
 	struct constructor_t {
 		size_t argc;
@@ -84,9 +84,8 @@ NS_NAPI_BEGIN
 				napi_delete_reference(env, self->ref);
 			}
 
-			if (Module::GARBAGE_CLEANING) {
-				memset(self, 0, sizeof(Class<ClassType>));
-			}
+			memset(self, 0, sizeof(Class<ClassType>));
+
 			delete self;
         }
 

@@ -196,9 +196,9 @@ namespace emscripten {
 
             typedef napi::FunctionInvoker<ReturnType, Args...> I;
             static napi_value invoke(const napi::function_t* prototype, const napi::context_t& ctx) {
-                FunctionPointerType fn = static_cast<FunctionPointerType>(prototype->function);
+                FunctionPointerType fn = reinterpret_cast<FunctionPointerType>(prototype->function);
 
-                using ClassType = napi::nomakeup<ThisType>::type;
+                using ClassType = typename napi::nomakeup<ThisType>::type;
                 napi::Class<ClassType>* self = nullptr;
 
                 napi_status status = napi_unwrap(ctx.env, ctx.js, reinterpret_cast<void**>(&self));
@@ -218,8 +218,8 @@ namespace emscripten {
             typedef napi::FunctionInvoker<void, Args...> I;
             static napi_value invoke(const napi::function_t* prototype, const napi::context_t& ctx)
             {
-                FunctionPointerType fn = static_cast<FunctionPointerType>(prototype->function);
-                using ClassType = napi::nomakeup<ThisType>::type;
+                FunctionPointerType fn = reinterpret_cast<FunctionPointerType>(prototype->function);
+                using ClassType = typename napi::nomakeup<ThisType>::type;
                 napi::Class<ClassType>* self = nullptr;
         
                 napi_status status = napi_unwrap(ctx.env, ctx.js, reinterpret_cast<void**>(&self));
@@ -245,7 +245,7 @@ namespace emscripten {
             {
                 const MemberPointer& method = *static_cast<MemberPointer*>(prototype->function);
 
-                using ClassType = napi::nomakeup<ThisType>::type;
+                using ClassType = typename napi::nomakeup<ThisType>::type;
                 napi::Class<ClassType>* self = nullptr;
 
                 napi_status status = napi_unwrap(ctx.env, ctx.js, reinterpret_cast<void**>(&self));
@@ -269,14 +269,14 @@ namespace emscripten {
             {
                 const MemberPointer& method = *static_cast<MemberPointer*>(prototype->function);
                 
-                using ClassType = napi::nomakeup<ThisType>::type;
+                using ClassType = typename napi::nomakeup<ThisType>::type;
                 napi::Class<ClassType>* self = nullptr;
 
                 napi_status status = napi_unwrap(ctx.env, ctx.js, reinterpret_cast<void**>(&self));
                 NODE_EMBIND_ERROR_NAPICALL_CHECK(ctx.env, status);
 
                 NODE_EMBIND_ERROR_INVALID_INSTANCE_CHECK(ctx.env, self->instance);
-                I::invoke<ClassType>(ctx.env, ctx.argv, self->instance, method);
+                I::invoke(ctx.env, ctx.argv, self->instance, method);
                 return nullptr;
             }
         };
@@ -614,7 +614,7 @@ namespace emscripten {
                 methodName,
                 sizeof...(Args),
                 reinterpret_cast<GenericFunction>(invoker),
-                function,
+                reinterpret_cast<GenericFunction>(function),
                 isPureVirtual<Policies...>::value);
             return *this;
         }

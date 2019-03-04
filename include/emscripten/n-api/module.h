@@ -87,12 +87,37 @@ protected:
 
 void register_function(
 	const char* name,
-	unsigned argCount,
-	const TYPEID argTypes[],
+	unsigned argc,
 	GenericFunction invoker,
 	GenericFunction function);
 
+void register_class(
+	const char* name,
+	TYPEID classType,
+	GenericFunction New,
+	GenericFunction Delete);	
 
+void register_class_constructor(
+	TYPEID classType,
+	unsigned argc,
+	GenericFunction invoker,
+	GenericFunction function);
+
+void register_class_property(
+	TYPEID classType,
+	const char* fieldName,
+	GenericFunction getter,
+	void* getterContext,
+	GenericFunction setter,
+	void* setterContext);
+
+void register_class_function(
+    TYPEID classType,
+    const char* methodName,
+    unsigned argCount,
+    GenericFunction invoker,
+    void* context,
+    unsigned isPureVirtual);	
 NS_NAPI_END
 
 
