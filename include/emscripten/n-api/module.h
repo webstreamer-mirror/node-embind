@@ -95,7 +95,8 @@ void register_class(
 	const char* name,
 	TYPEID classType,
 	GenericFunction New,
-	GenericFunction Delete);	
+	GenericFunction Delete,
+    class_t** pprototype);	
 
 void register_class_constructor(
 	TYPEID classType,

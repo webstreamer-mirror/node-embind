@@ -5,7 +5,7 @@
 #include <emscripten/n-api/value.h>
 
 #ifndef _arg
-#define _arg(n) napi::value<T##n>(env, argv[n]).value
+#define _arg(n) napi::value<T##n>(env, argv[n]).value()
 #endif
 
 

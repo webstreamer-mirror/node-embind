@@ -54,6 +54,9 @@ struct VM {
 	static void     set_napi_env(napi_env env) { env_ = env; }
 };
 
+
+
+
 NS_NAPI_END
 
 #define __env__ VM::get_napi_env();

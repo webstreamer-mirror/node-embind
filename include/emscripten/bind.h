@@ -314,7 +314,7 @@ namespace emscripten {
 
                 ClassType& inst = *self->instance;
 
-                inst.*field = napi::value<MemberType>(ctx.env, ctx.argv[0]).value;
+                inst.*field = napi::value<MemberType>(ctx.env, ctx.argv[0]).value();
                 return nullptr;
 
             }
@@ -441,7 +441,7 @@ namespace emscripten {
                 NODE_EMBIND_ERROR_INVALID_INSTANCE_CHECK(ctx.env, self->instance);
 
                 context(*self->instance,
-                    napi::value<SetterArgumentType>(ctx.env, ctx.argv[0]).value);
+                    napi::value<SetterArgumentType>(ctx.env, ctx.argv[0]).value());
                 //napi::Value<SetterArgumentType>(ctx.env).native_cast(ctx.argv[0]));
                 return nullptr;
             }
@@ -542,12 +542,12 @@ namespace emscripten {
 
             auto New = napi::Class<ClassType>::New;
             auto Delete = napi::Class<ClassType>::Delete;
-
             napi::register_class(
                 name,
                 TypeID<ClassType>::get(),
                 reinterpret_cast<GenericFunction>(New),
-                reinterpret_cast<GenericFunction>(Delete)
+                reinterpret_cast<GenericFunction>(Delete),
+                &napi::Class<ClassType>::prototype
             );
         }
 

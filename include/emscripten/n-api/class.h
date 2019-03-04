@@ -50,11 +50,12 @@ NS_NAPI_BEGIN
     template<typename ClassType>
     struct Class
 	{
-		class_t* prototype;
+		static class_t* prototype;
 		ClassType* instance;
 		napi_ref ref;
+        bool is_owner;
 
-		Class() : prototype(nullptr), instance(nullptr), ref(nullptr)
+		Class() : instance(nullptr), ref(nullptr),is_owner(true)
 		{}
 
         static ClassType* Constructor(const context_t& ctx, const std::list<constructor_t*>& ctors)
@@ -101,7 +102,7 @@ NS_NAPI_BEGIN
 			Class<ClassType>* self = nullptr;
 			napi_unwrap(env, js, (void**)&self);
 
-			if (self->instance) {
+			if (self->instance ) {
 				delete self->instance;
 				self->instance = nullptr;
 			}
@@ -114,37 +115,65 @@ NS_NAPI_BEGIN
 
 		}
 
+        inline static bool is_internal_create(context_t& ctx) {
+            napi_valuetype external, boolean;
+            return ctx.argc == 2 &&
+                napi_ok == napi_typeof(ctx.env, ctx.argv[0], &external) &&
+                external == napi_external &&
+                napi_ok == napi_typeof(ctx.env, ctx.argv[1], &boolean) &&
+                boolean == napi_boolean;
+        }
+
+        // TODO: how to handle instance ownership (is_owner), should rethink
         static napi_value New(napi_env env, napi_callback_info info)
         {
             context_t ctx;
-            ctx.env  = env;
+            ctx.env = env;
             ctx.argc = 0;
             ctx.argv = nullptr;
 
-            napi_value js=nullptr; // this in js
-			class_t* prototype = nullptr;
-            
-            napi_get_cb_info(env, info, &ctx.argc, nullptr, &js, (void**)&prototype);
+            napi_value js = nullptr; // this in js
+            class_t* prototype = Class<ClassType>::prototype;
+
+            napi_get_cb_info(env, info, &ctx.argc, nullptr, &js, nullptr);
+
             if (ctx.argc > 0)
             {
                 ctx.argv = (napi_value*)alloca(sizeof(napi_value)*ctx.argc);
                 napi_get_cb_info(env, info, &ctx.argc, ctx.argv, nullptr, nullptr);
             }
-			
-			std::list<constructor_t*>& ctors = prototype->ctors;
 
-			Class<ClassType>* self = new Class<ClassType>();
-			self->prototype = prototype;
-			self->instance = Constructor(ctx, ctors);
+            Class<ClassType>* self = new Class<ClassType>();
+            if (is_internal_create(ctx)) {
+                
+                ClassType* instance = nullptr;
+                napi_get_value_external(ctx.env, ctx.argv[0], (void**)&instance);
+                
+                napi_get_value_bool(env, ctx.argv[1], &self->is_owner);
+                if (self->is_owner) {
+                    self->instance = new ClassType(*instance);
+                }
+                else {
+                    self->instance = instance;
+                }
+
+            }
+            else {
+                std::list<constructor_t*>& ctors = prototype->ctors;
+
+                self->instance = Constructor(ctx, ctors);
+            }
 
             assert(self->instance);
-        
+
             napi_wrap(env, js, self, &Destructor, self, &self->ref);
-        
+
             return js;
         }
-
     };
+
+    template<typename ClassType>
+    class_t* Class<ClassType>::prototype = nullptr;
 
     static void Register(class_t* prototype, napi_env env, napi_value exports)
     {

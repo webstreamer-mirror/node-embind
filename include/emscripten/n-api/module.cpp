@@ -12,6 +12,7 @@ NS_NAPI_BEGIN
 bool Module::EMBIND_STD_STRING_IS_UTF8 = false;
 bool Module::GARBAGE_CLEANING = true;
 
+
 napi_value Module::Init(napi_env env, napi_value exports) {
 	module_t& m = node_module();
 
@@ -67,7 +68,8 @@ void register_class(
 	const char* name,
 	TYPEID classType,
 	GenericFunction New,
-	GenericFunction Delete)
+	GenericFunction Delete,
+    class_t** pprototype)
 {
 
 	module_t& m = node_module();
@@ -78,6 +80,7 @@ void register_class(
 	c->New = (Fn)(New);
 	c->Delete = (Fn)(Delete);
 	m.classes[classType] = c;
+    *pprototype = c;
 	
 }
 

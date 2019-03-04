@@ -69,6 +69,31 @@ void GlobalFunctionSetter(GlobalFunction& m, int value) {
     m.member=value;
 }
 
+
+//=====================================
+//     Constructor
+//=====================================
+class Constructor {
+public:
+    Constructor()
+        : v1(0)
+    {}
+
+    ~Constructor() {
+    }
+    int v1;
+};
+
+Constructor Constructor_create(int v1) {
+    Constructor c;
+    c.v1 = v1;
+    return c;
+}
+
+//=====================================
+//     Property
+//=====================================
+
 //
 // .function
 //
@@ -86,6 +111,7 @@ public:
         return sum;
     }
 };
+
 void fnSet(Function& f, int value) {
     f.set(value);
 }
@@ -100,6 +126,29 @@ int  fnAddMore(Function& f,int v1, int v2) // use to test 3 param functions
 EMSCRIPTEN_BINDINGS(binding)
 {
 	using namespace emscripten;
+
+    // Constructor
+    class_<Constructor>("Constructor")
+        .constructor<>()
+        .property("v1", &Constructor::v1);
+        ;
+    function("Constructor_create", &Constructor_create);
+    
+
+
+
+
+
+
+
+
+
+    /*
+
+
+
+
+
 	function("marker", select_overload<int(void)>(marker));
 	function("marker", select_overload<void(int)>(marker));
 	class_<Empty>("Empty")
@@ -146,6 +195,7 @@ EMSCRIPTEN_BINDINGS(binding)
         .function("Set", &fnSet)
         .function("AddMore", &fnAddMore)
         ;
+        */
 }
 
 #ifdef EMSCRIPTEN_NODE_EMBIND

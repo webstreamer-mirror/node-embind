@@ -4,7 +4,7 @@
 #include <emscripten/n-api/common.h>
 #include <emscripten/n-api/convertor/fundamental.h>
 #include <emscripten/n-api/convertor/string.h>
-
+#include <emscripten/n-api/convertor/class.h>
 NS_NAPI_BEGIN
 
 
@@ -17,9 +17,11 @@ struct Convertor {
 		
 		typename std::conditional< std::is_same<_T,std::string>::value, typename convertor::String<T>,
 
-		void>::type
+        typename std::conditional< std::is_class<_T>::value, typename convertor::Class<T>,
 
-	>::type;
+		void>::type
+            >::type
+	        >::type;
 
 	static_assert(!std::is_void<type>::value, 
 	"====  Unsupported type in Convertor (support list as below)  ====\n"\

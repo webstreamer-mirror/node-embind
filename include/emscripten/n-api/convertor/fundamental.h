@@ -14,12 +14,13 @@ namespace convertor {
 	template<>
 	struct Fundamental <bool> {
 		typedef bool type;
-		type     value;
+		type     value_;
+        inline type value() { return value_; }
 
 		Fundamental(napi_env env, napi_value val)
 		{
 			napi_status status;
-			status = napi_get_value_bool(env, val, &this->value);
+			status = napi_get_value_bool(env, val, &this->value_);
 			NODE_EMBIND_ERROR_NAPICALL_CHECK(env, status);
 		}
 
@@ -36,15 +37,17 @@ namespace convertor {
 	template<>
 	struct Fundamental <int> {
 		typedef int type;
-		type     value;
+		type     value_;
+        inline type value() { return value_; }
+
 		Fundamental(napi_env env, napi_value val)
 		{
 			napi_status status;
 			if (sizeof(int) == 64) {
-				status = napi_get_value_int64(env, val, (int64_t*)&this->value);
+				status = napi_get_value_int64(env, val, (int64_t*)&this->value_);
 			}
 			else {
-				status = napi_get_value_int32(env, val, (int32_t*)&this->value);
+				status = napi_get_value_int32(env, val, (int32_t*)&this->value_);
 			}
 
 			NODE_EMBIND_ERROR_NAPICALL_CHECK(env, status);
@@ -69,12 +72,13 @@ namespace convertor {
 	template<>
 	struct Fundamental <float> {
 		typedef float type;
-		double     value;
+		double     value_;
+        inline type value() { return value_; }
 
 		Fundamental(napi_env env, napi_value val)
 		{
 			napi_status status;
-			status =napi_get_value_double(env, val, &this->value);
+			status =napi_get_value_double(env, val, &this->value_);
 			NODE_EMBIND_ERROR_NAPICALL_CHECK(env, status);
 		}
 
@@ -91,12 +95,13 @@ namespace convertor {
 	template<>
 	struct Fundamental <double> {
 		typedef double type;
-		type     value;
+		type     value_;
+        inline type value() { return value_; }
 
 		Fundamental(napi_env env, napi_value val)
 		{
 			napi_status status;
-			status = napi_get_value_double(env, val, &this->value);
+			status = napi_get_value_double(env, val, &this->value_);
 			NODE_EMBIND_ERROR_NAPICALL_CHECK(env, status);
 		}
 
@@ -114,11 +119,12 @@ namespace convertor {
 	template<>
 	struct Fundamental <int64_t> {
 		typedef int64_t type;
-		type     value;
+		type     value_;
+        inline type value() { return value_; }
 
 		Fundamental(napi_env env, napi_value val) {
 			napi_status status;
-			status = napi_get_value_int64(env, val, &this->value);
+			status = napi_get_value_int64(env, val, &this->value_);
 			NODE_EMBIND_ERROR_NAPICALL_CHECK(env, status);
 		}
 
@@ -135,11 +141,12 @@ namespace convertor {
 	template<>
 	struct Fundamental <uint64_t> {
 		typedef uint64_t type;
-		type     value;
+		type     value_;
+        inline type value() { return value_; }
 
 		Fundamental(napi_env env, napi_value val) {
 			napi_status status;
-			status = napi_get_value_int64(env, val, (int64_t*)&this->value);
+			status = napi_get_value_int64(env, val, (int64_t*)&this->value_);
 			NODE_EMBIND_ERROR_NAPICALL_CHECK(env, status);
 		}
 
