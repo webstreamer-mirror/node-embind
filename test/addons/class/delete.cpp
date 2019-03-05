@@ -44,7 +44,7 @@ public:
         else {
             ctor_count[id]++;
         }
-    }
+    } 
 
     Deleter(const Deleter& d)
         : id(++ID), mark(d.mark)

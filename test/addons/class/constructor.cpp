@@ -7,13 +7,17 @@
 
 #include <emscripten/bind.h>
 
-//=====================================
-//     Constructor
-//=====================================
 class Constructor {
 public:
     Constructor()
         : id(0), mark(0)
+    {}
+
+    Constructor(int m)
+        : id(0), mark(m)
+    {}
+    Constructor(int m,int i)
+        : id(i), mark(m)
     {}
 
     ~Constructor() {
@@ -34,7 +38,7 @@ int Constructor_id(const Constructor& c) {
 }
 
 int Constructor_mark(const Constructor& c) {
-    return c.id;
+    return c.mark;
 }
 
 void Constructor_set_id(Constructor& c,int id) {
@@ -73,6 +77,8 @@ EMSCRIPTEN_BINDINGS(constructor)
     // Constructor
     class_<Constructor>("Constructor")
         .constructor<>()
+        .constructor<int>()
+        .constructor<int,int>()
         ;
 
     function("Constructor_create", &Constructor_create);

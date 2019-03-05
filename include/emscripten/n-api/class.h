@@ -65,11 +65,14 @@ NS_NAPI_BEGIN
             {
                 constructor_t* self = *it;
                 if (self->argc == ctx.argc) {
-                    return static_cast<ClassType*>(self->invoke(self, ctx));
+                    ClassType* inst = static_cast<ClassType*>(self->invoke(self, ctx));
+                    NODE_EMBIND_ERROR_INVALID_INSTANCE_CHECK(ctx.env, inst);
+                    return inst;
                 }
             }
             // no constructor match the provide arguments.
-            napi_throw_error(ctx.env, NODE_EMBIND_ERROR_ARGC, NODE_EMBIND_ERROR_CTOR_ARGC_MSG);
+            napi_status status = napi_throw_error(ctx.env, NODE_EMBIND_ERROR_ARGC, NODE_EMBIND_ERROR_CTOR_ARGC_MSG);
+            
             return nullptr;
         }
 
@@ -164,10 +167,7 @@ NS_NAPI_BEGIN
                 self->instance = Constructor(ctx, ctors);
             }
 
-            assert(self->instance);
-
             napi_wrap(env, js, self, &Destructor, self, &self->ref);
-
             return js;
         }
     };

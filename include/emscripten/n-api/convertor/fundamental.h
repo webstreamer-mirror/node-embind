@@ -162,42 +162,40 @@ namespace convertor {
 
 	template<typename T>
 	struct Fundamental<const T> : public Fundamental<T> {
-		Fundamental(napi_env env)
-			: Fundamental<T>(env)
+		Fundamental(napi_env env, napi_value val)
+			: Fundamental<T>(env, val)
 		{}
 	};
 
 	template<typename T>
 	struct Fundamental<T&> : public Fundamental<T> {
-		Fundamental(napi_env env)
-			: Fundamental<T>(env)
+		Fundamental(napi_env env, napi_value val)
+			: Fundamental<T>(env, val)
 		{}
 	};
 
 	template<typename T>
 	struct Fundamental<const T&> : public Fundamental<T> {
-		Fundamental(napi_env env)
-			: Fundamental<T>(env)
+		Fundamental(napi_env env, napi_value val)
+			: Fundamental<T>(env, val)
 		{}
 	};
 
-	template<typename T>
-	struct Fundamental<T&&> {
-		typedef typename Fundamental<T>::type type;
-		Fundamental<T> obj_;
-		Fundamental(napi_env env)
-			: obj_(env)
-		{}
+    template<typename T>
+    struct Fundamental<T&&> : public Fundamental<T> {
+        Fundamental(napi_env env, napi_value val)
+            : Fundamental<T>(env,val)
+        {}
+    };
 
-		inline type cast(napi_value val)
-		{
-			return obj_.cast(val);
-		}
-
-		inline napi_value napi_value_(type val) {
-			return obj_.napi_value_(val);
-		}
-	};
+	//template<typename T>
+	//struct Fundamental<T&&> {
+	//	typedef typename Fundamental<T>::type type;
+	//	Fundamental<T> obj_;
+	//	Fundamental(napi_env env)
+    //        : Fundamental<T>(env)
+	//	{}
+	//};
 
 }
 NS_NAPI_END

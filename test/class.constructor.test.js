@@ -31,6 +31,30 @@ describe('class.constructor', function () {
             c0.delete();
     });
 
+    it('#Construct with params', function () {
+        var c0 = new Constructor();
+        var c1 = new Constructor(1);
+        var c2 = new Constructor(10,20);
+
+        assert.strictEqual(Constructor_id(c0), 0);
+        assert.strictEqual(Constructor_mark(c0), 0);
+
+        
+        assert.strictEqual(Constructor_mark(c1), 1);
+
+        assert.strictEqual(Constructor_id(c2), 20);
+        assert.strictEqual(Constructor_mark(c2), 10);
+
+        c0.delete();
+        c1.delete();
+        c2.delete();
+
+        assert.Throw(function(){
+           new Constructor(1,2,3,4);
+        })
+
+    });
+
     it('#Constructor_create', function () {
         var c = Constructor_create(1,1);
         assert.strictEqual(Constructor_id(c), 1);
