@@ -6,7 +6,6 @@ var chai = require('chai'),
 describe('class.property', function () {
     const {
         Property,
-        Property_IDCounter
     } = addons.class;
 
     it('#const member', function () {

@@ -250,6 +250,7 @@ EMSCRIPTEN_BINDINGS(binding)
 #include "constructor.cpp"
 #include "delete.cpp"
 #include "property.cpp"
+#include "function.cpp"
 
 #ifdef EMSCRIPTEN_NODE_EMBIND
 #include <emscripten/node-embind>
