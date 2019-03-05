@@ -6,7 +6,7 @@
 #include <codecvt>
 
 #include <emscripten/bind.h>
-
+#if 0
 static int marker_ = 0;
 int marker() { return marker_; }
 void marker(int v) { marker_ = v; }
@@ -76,19 +76,68 @@ void GlobalFunctionSetter(GlobalFunction& m, int value) {
 class Constructor {
 public:
     Constructor()
-        : v1(0)
+        : id(0), mark(0)
     {}
 
     ~Constructor() {
     }
-    int v1;
+    int id;
+    int mark;
 };
 
-Constructor Constructor_create(int v1) {
+Constructor Constructor_create(int id, int mark) {
     Constructor c;
-    c.v1 = v1;
+    c.id = id;
+    c.mark = mark;
     return c;
 }
+
+int Constructor_id(const Constructor& c) {
+    return c.id;
+}
+
+int Constructor_mark(const Constructor& c) {
+    return c.id;
+}
+
+void Constructor_set_id(Constructor& c,int id) {
+    c.id=id;
+}
+
+void Constructor_set_mark( Constructor& c,int mark) {
+    c.mark = mark;
+}
+
+// param is by value, return also by value
+Constructor Constructor_val_return_val(Constructor c) {
+    return c;
+}
+
+Constructor& Constructor_ref_return_ref(Constructor& c) {
+    return c;
+}
+
+Constructor* Constructor_pointer_return_pointer(Constructor* c) {
+    return c;
+}
+
+
+EMSCRIPTEN_BINDINGS(constructor)
+{
+    using namespace emscripten;
+
+    // Constructor
+    class_<Constructor>("Constructor")
+        .constructor<>()
+        ;
+
+    function("Constructor_create", &Constructor_create);
+    function("Constructor_id", &Constructor_id);
+    function("Constructor_mark", &Constructor_mark);
+    function("Constructor_set_id", &Constructor_set_id);
+    function("Constructor_set_mark", &Constructor_set_mark);
+}
+
 
 //=====================================
 //     Property
@@ -125,14 +174,13 @@ int  fnAddMore(Function& f,int v1, int v2) // use to test 3 param functions
 
 EMSCRIPTEN_BINDINGS(binding)
 {
-	using namespace emscripten;
-
-    // Constructor
-    class_<Constructor>("Constructor")
-        .constructor<>()
-        .property("v1", &Constructor::v1);
-        ;
-    function("Constructor_create", &Constructor_create);
+	//using namespace emscripten;
+    //
+    //// Constructor
+    //class_<Constructor>("Constructor")
+    //    .constructor<>()
+    //    ;
+    //function("Constructor_create", &Constructor_create);
     
 
 
@@ -197,6 +245,10 @@ EMSCRIPTEN_BINDINGS(binding)
         ;
         */
 }
+#endif
+
+#include "constructor.cpp"
+#include "delete.cpp"
 
 #ifdef EMSCRIPTEN_NODE_EMBIND
 #include <emscripten/node-embind>

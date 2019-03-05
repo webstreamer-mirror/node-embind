@@ -77,7 +77,24 @@ namespace convertor {
         inline static napi_value napivalue(napi_env env, T& val) {
 
             return CreateObject<T>(env, &val, false);
+        }
+    };
 
+    template<typename T>
+    struct Class <const T&> {
+        typedef const T& type;
+        T*     value_;
+
+        const T& value() { return *this->value_; }
+
+
+        Class(napi_env env, napi_value val) {
+            this->value_ = GetObject<T>(env, val);
+        }
+
+        inline static napi_value napivalue(napi_env env, type val) {
+
+            return CreateObject<T>(env, const_cast<T*>(&val), false);
         }
     };
 
@@ -94,11 +111,47 @@ namespace convertor {
 
         inline static napi_value napivalue(napi_env env, T* val) {
 
-            return CreateObject<T>(env, &val, false);
+            return CreateObject<T>(env, val, false);
 
         }
     };
 
+    template<typename T>
+    struct Class <const T*> {
+        typedef const T* type;
+        T*     value_;
+
+        const T* value() { return this->value_; }
+
+
+        Class(napi_env env, napi_value val) {
+            this->value_ = GetObject<T>(env, val);
+        }
+
+        inline static napi_value napivalue(napi_env env, type val) {
+
+            return CreateObject<T>(env, const_cast<T*>(val), false);
+
+        }
+    };
+
+    template<typename T>
+    struct Class <T&&> {
+        typedef T type;
+        type*     value_;
+
+        type& value() { return *this->value_; }
+
+
+        Class(napi_env env, napi_value val) {
+            this->value_ = GetObject<T>(env, val);
+        }
+
+        inline static napi_value napivalue(napi_env env, type val) {
+
+            return CreateObject<T>(env, &val, false);
+        }
+    };
 }
 NS_NAPI_END
 
