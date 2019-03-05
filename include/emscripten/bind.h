@@ -170,26 +170,7 @@ namespace emscripten {
         ClassType* operator_new(Args&&... args) {
             return new ClassType(std::forward<Args>(args)...);
         }
-        /*
-        template<typename WrapperType, typename ClassType, typename... Args>
-        WrapperType wrapped_new(Args&&... args) {
-            return WrapperType(new ClassType(std::forward<Args>(args)...));
-        }
 
-        template<typename ClassType, typename... Args>
-        ClassType* raw_constructor(
-            typename internal::BindingType<Args>::WireType... args
-        ) {
-            return new ClassType(
-                internal::BindingType<Args>::fromWireType(args)...
-            );
-        }
-
-        template<typename ClassType>
-        void raw_destructor(ClassType* ptr) {
-            delete ptr;
-        }
-        */
 
         template<typename FunctionPointerType, typename ReturnType, typename ThisType, typename... Args>
         struct FunctionInvoker {
