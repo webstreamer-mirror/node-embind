@@ -10,7 +10,7 @@
 
 class Property {
 public:
-    static const int Counter_Base_ =1000;
+    static const int Counter_Base_;
     static int Counter_;
 
     Property()
@@ -40,7 +40,7 @@ public:
 };
 
 int Property::Counter_ = 0;
-
+const int Property::Counter_Base_ =1000;
 int GetId(const Property& m) {
     return m.id;
 }

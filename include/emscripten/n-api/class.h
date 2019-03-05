@@ -71,7 +71,7 @@ NS_NAPI_BEGIN
                 }
             }
             // no constructor match the provide arguments.
-            napi_status status = napi_throw_error(ctx.env, NODE_EMBIND_ERROR_ARGC, NODE_EMBIND_ERROR_CTOR_ARGC_MSG);
+            napi_throw_error(ctx.env, NODE_EMBIND_ERROR_ARGC, NODE_EMBIND_ERROR_CTOR_ARGC_MSG);
             
             return nullptr;
         }

@@ -41,7 +41,9 @@ inline static const char* _node_embind_napi_call_error(napi_status status) {
 		case napi_closing:                     return "napi call failed (napi_closing)."; 
 		case napi_bigint_expected:             return "napi call failed (napi_bigint_expected).";
 	default:
-		std::string msg= std::string("napi call failed status=") + std::to_string(static_cast<int>(status));
+	  static std::string msg;
+
+		msg= std::string("napi call failed status=") + std::to_string(static_cast<int>(status));
 		return msg.c_str();
 		break;
 	}
