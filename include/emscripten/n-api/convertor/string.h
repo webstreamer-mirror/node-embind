@@ -14,7 +14,8 @@ namespace convertor {
 	template<>
 	struct String <std::string> {
 		typedef std::string type;
-		type     value;
+        std::string value_;
+        inline std::string& value() { return value_; }
 
 		String(napi_env env, ::napi_value val)
 		{
@@ -25,16 +26,16 @@ namespace convertor {
 				status = ::napi_get_value_string_utf8(env, val, nullptr, 0, &len);
 				NODE_EMBIND_ERROR_NAPICALL_CHECK(env, status);
 
-				value.resize(len);
-				status = ::napi_get_value_string_utf8(env, val, (char*)value.data(), value.size()+1, &len);
+                value_.resize(len);
+				status = ::napi_get_value_string_utf8(env, val, (char*)value_.data(), value_.size()+1, &len);
 				NODE_EMBIND_ERROR_NAPICALL_CHECK(env, status);
 			}
 			else {
 				status = ::napi_get_value_string_latin1(env, val, nullptr, 0, &len);
 				NODE_EMBIND_ERROR_NAPICALL_CHECK(env, status);
 
-				value.resize(len);
-				status = ::napi_get_value_string_latin1(env, val, (char*)value.data(), value.size(), &len);
+                value_.resize(len);
+				status = ::napi_get_value_string_latin1(env, val, (char*)value_.data(), value_.size(), &len);
 				NODE_EMBIND_ERROR_NAPICALL_CHECK(env, status);
 			}
 		}
