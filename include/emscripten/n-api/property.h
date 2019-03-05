@@ -8,12 +8,14 @@ struct property_t {
 	property_t()
 		: name(nullptr), getter(nullptr), setter(nullptr)
 		, setter_context(nullptr), getter_context(nullptr)
+        , attributes(napi_default)
 	{}
 	const char* name;
 	napi_value(*getter)(const property_t*, const context_t&);
 	napi_value(*setter)(const property_t*, const context_t&);
 	void* setter_context;
 	void* getter_context;
+    napi_property_attributes attributes;
 };
 
 inline static napi_value napi_setter(napi_env env, napi_callback_info info) {

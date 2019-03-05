@@ -131,14 +131,14 @@ void register_class_property(
 void register_class_function(
     TYPEID classType,
     const char* methodName,
-    unsigned argCount,
+    unsigned argc,
     GenericFunction invoker,
     void* context,
     unsigned isPureVirtual)
 {
     module_t& m = node_module();
     function_t* fn = new function_t();
-    fn->argc = argCount - 1;
+    fn->argc = argc;
     fn->name = methodName;
     typedef napi_value(*Fn)(const function_t*, const context_t&);
     fn->invoke = (Fn)(invoker);
@@ -146,6 +146,47 @@ void register_class_function(
     m.classes[classType]->function.push_back(fn);
 }
 
+void register_class_class_function(
+    TYPEID classType,
+    const char* methodName,
+    unsigned argc,
+    GenericFunction invoker,
+    GenericFunction method)
+{
+    module_t& m = node_module();
+    function_t* fn = new function_t();
+    fn->argc = argc;
+    fn->name = methodName;
+
+    typedef napi_value(*Fn)(const function_t*, const context_t&);
+    fn->invoke = (Fn)invoker;
+    fn->function = method;
+    fn->attributes = napi_static;
+    m.classes[classType]->function.push_back(fn);
+}
+
+void register_class_class_property(
+    TYPEID classType,
+    const char* fieldName,
+    const void* fieldContext,
+    GenericFunction getter,
+    GenericFunction setter)
+{
+    module_t& m = node_module();
+    property_t* prop = new property_t;
+    prop->name = fieldName;
+
+    typedef napi_value(*Setter)(const property_t*, const context_t&);
+    prop->setter = (Setter)setter;
+    prop->setter_context = (void*)fieldContext;
+
+    typedef napi_value(*Getter)(const property_t*, const context_t&);
+
+    prop->getter = (Getter)getter;
+    prop->getter_context = (void*)fieldContext;
+    prop->attributes = napi_static;
+    m.classes[classType]->property.push_back(prop);
+}
 NS_NAPI_END
 
 

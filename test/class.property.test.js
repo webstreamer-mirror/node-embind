@@ -55,4 +55,17 @@ describe('class.property', function () {
 
     });
 
+    it('#class_property function', function () {
+
+        
+            
+        assert.strictEqual(Property.COUNTER_BASE, 1000);
+        Property.COUNTER_BASE=12345;
+        assert.strictEqual(Property.COUNTER_BASE, 1000);
+
+        Property.Counter=123;
+        assert.strictEqual(Property.Counter, 123);
+
+    });
+
 });

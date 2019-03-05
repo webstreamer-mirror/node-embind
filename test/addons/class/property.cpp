@@ -9,8 +9,10 @@
 
 
 class Property {
-    static int Counter_;
 public:
+    static const int Counter_Base_ =1000;
+    static int Counter_;
+
     Property()
         : id(Counter_++), mark(0)
     {}
@@ -67,9 +69,10 @@ EMSCRIPTEN_BINDINGS(property)
         .property("Mark", &Property::GetMark, &Property::SetMark)
         .property("fId", select_overload<int(const Property&)>(&GetId))
         .property("fMark", select_overload<int(const Property&)>(&GetMark),
-            select_overload<void(Property&, int)>(&SetMark))            
+            select_overload<void(Property&, int)>(&SetMark))
+        .class_property("Counter",&Property::Counter_)
+        .class_property("COUNTER_BASE", &Property::Counter_Base_)
         ;
-    function("PropertyCounter", &Property::Counter);
     
     
 }

@@ -118,7 +118,22 @@ void register_class_function(
     unsigned argCount,
     GenericFunction invoker,
     void* context,
-    unsigned isPureVirtual);	
+    unsigned isPureVirtual);
+
+void register_class_class_function(
+    TYPEID classType,
+    const char* methodName,
+    unsigned argc,
+    GenericFunction invoker,
+    GenericFunction method);
+
+void register_class_class_property(
+    TYPEID classType,
+    const char* fieldName,
+    const void* fieldContext,
+    GenericFunction getter,
+    GenericFunction setter);
+
 NS_NAPI_END
 
 

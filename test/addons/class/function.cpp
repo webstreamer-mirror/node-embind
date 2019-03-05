@@ -12,7 +12,9 @@ class Function {
 public:
     Function()
         : V1(0), V2(0)
-    {}
+    {
+        counter++;
+    }
 
     int V1;
     int V2;
@@ -24,8 +26,12 @@ public:
     void setV2(int v)  { V2 = v; }
     void set(int v1, int v2) { V1 = v1; V2 = v2; }
     
+    static int counter;
+    static int Counter() { return counter; }
+    static void SetCounter(int c) { counter=c; }
 };
 
+int Function::counter = 0;
 
 int  GetV1(Function& c)  { return c.V1; }
 int  GetV2(Function& c)  { return c.V2; }
@@ -57,7 +63,8 @@ EMSCRIPTEN_BINDINGS(function)
         .function("SetV2", select_overload<void(Function&,int)>(&SetV2))
         .function("Set", select_overload<void(Function&,int,int)>(&Set))
 
-
+        .class_function("Counter",&Function::Counter)
+        .class_function("SetCounter", &Function::SetCounter)
         ;
     
     

@@ -53,4 +53,16 @@ describe('class.function', function () {
 
     });
 
+    it('#class_function', function () {
+
+        var counter = Function.Counter();
+
+        var c = new Function();
+            
+        assert.strictEqual(Function.Counter(), counter+1);
+
+        Function.SetCounter(100);
+        assert.strictEqual(Function.Counter(), 100);
+    });
+
 });

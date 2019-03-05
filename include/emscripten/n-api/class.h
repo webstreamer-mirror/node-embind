@@ -185,8 +185,8 @@ NS_NAPI_BEGIN
 			const char* name = (*it)->name;			
 			napi_callback getter = (*it)->getter ? &napi_getter : nullptr;
 			napi_callback setter = (*it)->setter ? &napi_setter : nullptr;
-
-			prop.push_back({name,nullptr,nullptr,getter,setter,	0,napi_default,*it});
+            
+			prop.push_back({name,nullptr,nullptr,getter,setter,	0,(*it)->attributes,*it});
 		}
 
         for (std::list<function_t*>::iterator it = prototype->function.begin();

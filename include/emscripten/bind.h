@@ -320,19 +320,26 @@ namespace emscripten {
             }
 
         };
-        //template<typename FieldType>
-        //struct GlobalAccess {
-        //	typedef internal::BindingType<FieldType> MemberBinding;
-        //	typedef typename MemberBinding::WireType WireType;
-        //
-        //	static WireType get(FieldType* context) {
-        //		return MemberBinding::toWireType(*context);
-        //	}
-        //
-        //	static void set(FieldType* context, WireType value) {
-        //		*context = MemberBinding::fromWireType(value);
-        //	}
-        //};
+
+        template<typename FieldType>
+        struct GlobalAccess {
+
+            static napi_value get(const napi::property_t* self, const napi::context_t& ctx) {
+
+                FieldType* field = (FieldType*)self->getter_context;
+
+                return napi::value<FieldType>::napivalue(ctx.env,*field);
+
+            }
+            static napi_value set(const napi::property_t* self, const napi::context_t& ctx) {
+
+                FieldType* field = (FieldType*)self->getter_context;
+
+                *field = napi::value<FieldType>(ctx.env,ctx.argv[0]).value();
+                return nullptr;
+
+            }
+        };
 
         // TODO: This could do a reinterpret-cast if sizeof(T) === sizeof(void*)
         template<typename T>
@@ -686,6 +693,50 @@ namespace emscripten {
                 getContext(setter)
             );
 
+            return *this;
+        }
+
+
+        template<typename ReturnType, typename... Args, typename... Policies>
+        EMSCRIPTEN_ALWAYS_INLINE const class_& class_function(const char* methodName, ReturnType(*classMethod)(Args...), Policies...) const {
+            using namespace internal;
+
+            auto invoke = &Invoker<ReturnType, Args...>::invoke;
+            napi::register_class_class_function(
+                TypeID<ClassType>::get(),
+                methodName,
+                sizeof...(Args),
+                reinterpret_cast<GenericFunction>(invoke),
+                reinterpret_cast<GenericFunction>(classMethod));
+            return *this;
+        }
+
+        template<typename FieldType>
+        EMSCRIPTEN_ALWAYS_INLINE const class_& class_property(const char* name, const FieldType* field) const {
+             using namespace internal;
+
+             auto getter = &GlobalAccess<FieldType>::get;
+             napi::register_class_class_property(
+                 TypeID<ClassType>::get(),
+                 name,
+                 field,
+                 reinterpret_cast<GenericFunction>(getter),
+                 0);
+             return *this;
+        }
+         
+        template<typename FieldType>
+        EMSCRIPTEN_ALWAYS_INLINE const class_& class_property(const char* name, FieldType* field) const {
+            using namespace internal;
+        
+            auto getter = &GlobalAccess<FieldType>::get;
+            auto setter = &GlobalAccess<FieldType>::set;
+            napi::register_class_class_property(
+                TypeID<ClassType>::get(),
+                name,
+                field,
+                reinterpret_cast<GenericFunction>(getter),
+                reinterpret_cast<GenericFunction>(setter));
             return *this;
         }
 
