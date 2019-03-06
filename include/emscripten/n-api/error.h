@@ -4,9 +4,17 @@
 
 #define NODE_EMBIND_ERROR_NAPICALL     "10000"
 #define NODE_EMBIND_ERROR_NAPICALL_MSG(status) _node_embind_napi_call_error(status)
+#define NODE_EMBIND_ERROR_NAPICALL_THROW(env) \
+   ::napi_throw_error(env, NODE_EMBIND_ERROR_NAPICALL, NODE_EMBIND_ERROR_NAPICALL_MSG(status));
+#define NODE_EMBIND_ERROR_NAPICALL_RETURN(env, status, returncode) \
+   if(status != napi_ok ) {\
+     NODE_EMBIND_ERROR_NAPICALL_THROW(env);\
+     return returncode;\
+   }
+
 #define NODE_EMBIND_ERROR_NAPICALL_CHECK(env, status) \
    if(status != napi_ok ) {\
-     ::napi_throw_error(env, NODE_EMBIND_ERROR_NAPICALL, NODE_EMBIND_ERROR_NAPICALL_MSG(status));\
+     NODE_EMBIND_ERROR_NAPICALL_THROW(env);\
    }
 
 #define NODE_EMBIND_ERROR_ARGC     "10100"
@@ -15,10 +23,18 @@
 
 #define NODE_EMBIND_ERROR_INVALID_INSTANCE     "10101"
 #define NODE_EMBIND_ERROR_INVALID_INSTANCE_MSG "Invalid instance from wraped object."
+#define NODE_EMBIND_ERROR_INVALID_INSTANCE_THROW(env) \
+       ::napi_throw_error(env, NODE_EMBIND_ERROR_INVALID_INSTANCE, NODE_EMBIND_ERROR_INVALID_INSTANCE_MSG);
+#define NODE_EMBIND_ERROR_INVALID_INSTANCE_RETURN(env,instance,returncode)\
+	if (instance==nullptr) {\
+       NODE_EMBIND_ERROR_INVALID_INSTANCE_THROW(env);\
+       return returncode;\
+	}
 #define NODE_EMBIND_ERROR_INVALID_INSTANCE_CHECK(env,instance)\
 	if (!instance) {\
-       ::napi_throw_error(env, NODE_EMBIND_ERROR_INVALID_INSTANCE, NODE_EMBIND_ERROR_INVALID_INSTANCE_MSG);\
+       NODE_EMBIND_ERROR_INVALID_INSTANCE_THROW(env);\
 	}
+
 inline static const char* _node_embind_napi_call_error(napi_status status) {
 	switch (status)
 	{

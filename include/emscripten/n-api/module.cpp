@@ -69,7 +69,8 @@ void register_class(
 	TYPEID classType,
 	GenericFunction New,
 	GenericFunction Delete,
-    class_t** pprototype)
+    class_t** pprototype,
+    class_t::SubType subtype)
 {
 
 	module_t& m = node_module();
@@ -79,6 +80,7 @@ void register_class(
 	typedef napi_value (*Fn)(napi_env, napi_callback_info);
 	c->New = (Fn)(New);
 	c->Delete = (Fn)(Delete);
+    c->subtype = subtype;
 	m.classes[classType] = c;
     *pprototype = c;
 	

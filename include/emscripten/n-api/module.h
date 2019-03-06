@@ -96,7 +96,8 @@ void register_class(
 	TYPEID classType,
 	GenericFunction New,
 	GenericFunction Delete,
-    class_t** pprototype);	
+    class_t** pprototype,
+    class_t::SubType subtype=class_t::generic);	
 
 void register_class_constructor(
 	TYPEID classType,

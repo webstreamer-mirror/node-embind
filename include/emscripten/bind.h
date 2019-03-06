@@ -430,7 +430,6 @@ namespace emscripten {
 
                 context(*self->instance,
                     napi::value<SetterArgumentType>(ctx.env, ctx.argv[0]).value());
-                //napi::Value<SetterArgumentType>(ctx.env).native_cast(ctx.argv[0]));
                 return nullptr;
             }
 
@@ -439,7 +438,143 @@ namespace emscripten {
                 return internal::getContext(context);
             }
         };
+
+        class noncopyable {
+        protected:
+            noncopyable() {}
+            ~noncopyable() {}
+        private:
+            noncopyable(const noncopyable&) = delete;
+            const noncopyable& operator=(const noncopyable&) = delete;
+        };
+
+        template<typename ClassType, typename ElementType>
+        static napi_value get_by_index(const napi::property_t* prototype, const napi::context_t& ctx) {
+            int index = (int)(int64_t)prototype->getter_context;
+            napi::Class<ClassType>* self = nullptr;
+
+            napi_status status = napi_unwrap(ctx.env, ctx.js, reinterpret_cast<void**>(&self));
+            NODE_EMBIND_ERROR_NAPICALL_RETURN(ctx.env, status, nullptr);
+            NODE_EMBIND_ERROR_INVALID_INSTANCE_RETURN(ctx.env, self->instance, nullptr);
+
+            return napi::value<ElementType>::napivalue(ctx.env, (*self->instance)[index]);
+        }
+
+        template<typename ClassType, typename ElementType>
+        static napi_value set_by_index(const napi::property_t* prototype, const napi::context_t& ctx) {
+            int index = (int)(int64_t)prototype->setter_context;
+            napi::Class<ClassType>* self = nullptr;
+
+            napi_status status = napi_unwrap(ctx.env, ctx.js, reinterpret_cast<void**>(&self));
+            NODE_EMBIND_ERROR_NAPICALL_RETURN(ctx.env, status,nullptr);
+            NODE_EMBIND_ERROR_INVALID_INSTANCE_RETURN(ctx.env, self->instance, nullptr);
+
+            (*self->instance)[index] = napi::value<ElementType>(ctx.env, ctx.argv[0]).value();
+
+            return nullptr;
+        }
     }
+
+    template<int Index>
+    struct index {
+    };
+
+    ////////////////////////////////////////////////////////////////////////////////
+    // VALUE STRUCTS
+    ////////////////////////////////////////////////////////////////////////////////
+
+    template<typename ClassType>
+    class value_object : public internal::noncopyable {
+    public:
+        typedef ClassType class_type;
+
+        value_object(const char* name) {
+            using namespace internal;
+
+            auto New = napi::Class<ClassType>::New;
+            auto Delete = napi::Class<ClassType>::Delete;
+            napi::register_class(
+                name,
+                TypeID<ClassType>::get(),
+                reinterpret_cast<GenericFunction>(New),
+                reinterpret_cast<GenericFunction>(Delete),
+                &napi::Class<ClassType>::prototype,
+                napi::class_t::value_object);
+        }
+
+        template<typename InstanceType, typename FieldType>
+        value_object& field(const char* fieldName, FieldType InstanceType::*field) {
+            using namespace internal;
+
+            auto getter = &MemberAccess<ClassType, FieldType>::template get<ClassType>;
+            auto setter = &MemberAccess<ClassType, FieldType>::template set<ClassType>;
+
+            napi::register_class_property(
+                TypeID<ClassType>::get(),
+                fieldName,
+                reinterpret_cast<GenericFunction>(getter),
+                getContext(field),
+                reinterpret_cast<GenericFunction>(setter),
+                getContext(field));
+
+            return *this;
+        }
+
+        template<typename Getter, typename Setter>
+        value_object& field(
+            const char* fieldName,
+            Getter getter,
+            Setter setter
+        ) {
+            using namespace internal;
+            typedef GetterPolicy<Getter> GP;
+            typedef SetterPolicy<Setter> SP;
+
+            auto g = &GP::template get<ClassType>;
+            auto s = &SP::template set<ClassType>;
+
+            napi::register_class_property(
+                TypeID<ClassType>::get(),
+                fieldName,
+                reinterpret_cast<GenericFunction>(g),
+                getContext(getter),
+                reinterpret_cast<GenericFunction>(s),
+                getContext(setter));
+
+            return *this;
+        }
+
+        template<int Index>
+        value_object& field(const char* fieldName, index<Index>) {
+            using namespace internal;
+            ClassType* null = 0;
+            typedef typename std::remove_reference<decltype((*null)[Index])>::type ElementType;
+
+            auto getter = &internal::get_by_index<ClassType, ElementType>;
+            auto setter = &internal::set_by_index<ClassType, ElementType>;
+
+            napi::register_class_property(
+                TypeID<ClassType>::get(),
+                fieldName,
+                reinterpret_cast<GenericFunction>(getter),
+                reinterpret_cast<void*>(Index),
+                reinterpret_cast<GenericFunction>(setter),
+                reinterpret_cast<void*>(Index) );
+            //_embind_register_value_object_field(
+            //    TypeID<ClassType>::get(),
+            //    fieldName,
+            //    TypeID<ElementType>::get(),
+            //    getSignature(getter),
+            //    reinterpret_cast<GenericFunction>(getter),
+            //    reinterpret_cast<void*>(Index),
+            //    TypeID<ElementType>::get(),
+            //    getSignature(setter),
+            //    reinterpret_cast<GenericFunction>(setter),
+            //    reinterpret_cast<void*>(Index));
+            return *this;
+        }
+
+    };
 
     ////////////////////////////////////////////////////////////////////////////////
     // CLASSES
@@ -535,8 +670,7 @@ namespace emscripten {
                 TypeID<ClassType>::get(),
                 reinterpret_cast<GenericFunction>(New),
                 reinterpret_cast<GenericFunction>(Delete),
-                &napi::Class<ClassType>::prototype
-            );
+                &napi::Class<ClassType>::prototype );
         }
 
         template<typename... ConstructorArgs, typename... Policies>

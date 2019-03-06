@@ -20,13 +20,19 @@ NS_NAPI_BEGIN
 
 	struct class_t
 	{
-		class_t() :name(nullptr), New(nullptr), ctor(nullptr),ref(nullptr)
+        enum SubType {
+            generic = 0,
+            value_object
+        };
+		class_t() :name(nullptr), New(nullptr), ctor(nullptr)
+            ,ref(nullptr), subtype(generic)
 		{}
 		const char* name;  
 		napi_callback New; // C++ function to create class instance
 		napi_callback Delete; // C++ function to create class instance
 		napi_value ctor;   // constructor function for the class.
 		napi_ref ref;      // reference use to hold ctor
+        SubType subtype;
 
 		std::list<constructor_t*> ctors;
 		std::list<function_t*> function;
@@ -60,6 +66,7 @@ NS_NAPI_BEGIN
 
         static ClassType* Constructor(const context_t& ctx, const std::list<constructor_t*>& ctors)
         {
+
             for (std::list<constructor_t*>::const_iterator it = ctors.cbegin();
                 it != ctors.cend(); it++)
             {
@@ -74,6 +81,15 @@ NS_NAPI_BEGIN
             napi_throw_error(ctx.env, NODE_EMBIND_ERROR_ARGC, NODE_EMBIND_ERROR_CTOR_ARGC_MSG);
             
             return nullptr;
+        }
+
+        static ClassType* ValueObject(const context_t& ctx)
+        {
+            ClassType* inst = nullptr;
+            inst = new ClassType();
+            NODE_EMBIND_ERROR_INVALID_INSTANCE_CHECK(ctx.env, inst);
+
+            return inst;
         }
 
         static void Destructor(napi_env env, void* obj, void* finalize_hint)
@@ -164,7 +180,13 @@ NS_NAPI_BEGIN
             else {
                 std::list<constructor_t*>& ctors = prototype->ctors;
 
-                self->instance = Constructor(ctx, ctors);
+                if (prototype->subtype == class_t::value_object) {
+                    self->instance = ValueObject(ctx);
+                }
+                else {
+                    self->instance = Constructor(ctx, ctors);
+                }
+
             }
 
             napi_wrap(env, js, self, &Destructor, self, &self->ref);
