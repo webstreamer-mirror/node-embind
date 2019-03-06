@@ -17,39 +17,39 @@ namespace convertor {
         std::string value_;
         inline std::string& value() { return value_; }
 
-		String(napi_env env, ::napi_value val)
+		String(const context_t& ctx, ::napi_value val)
 		{
 			napi_status status;
 			size_t len = 0;
 
 			if (Module::EMBIND_STD_STRING_IS_UTF8) {
-				status = ::napi_get_value_string_utf8(env, val, nullptr, 0, &len);
-				NODE_EMBIND_ERROR_NAPICALL_CHECK(env, status);
+				status = ::napi_get_value_string_utf8(ctx.env, val, nullptr, 0, &len);
+				NODE_EMBIND_ERROR_NAPICALL_CHECK(ctx.env, status);
 
                 value_.resize(len);
-				status = ::napi_get_value_string_utf8(env, val, (char*)value_.data(), value_.size()+1, &len);
-				NODE_EMBIND_ERROR_NAPICALL_CHECK(env, status);
+				status = ::napi_get_value_string_utf8(ctx.env, val, (char*)value_.data(), value_.size()+1, &len);
+				NODE_EMBIND_ERROR_NAPICALL_CHECK(ctx.env, status);
 			}
 			else {
-				status = ::napi_get_value_string_latin1(env, val, nullptr, 0, &len);
-				NODE_EMBIND_ERROR_NAPICALL_CHECK(env, status);
+				status = ::napi_get_value_string_latin1(ctx.env, val, nullptr, 0, &len);
+				NODE_EMBIND_ERROR_NAPICALL_CHECK(ctx.env, status);
 
                 value_.resize(len);
-				status = ::napi_get_value_string_latin1(env, val, (char*)value_.data(), value_.size(), &len);
-				NODE_EMBIND_ERROR_NAPICALL_CHECK(env, status);
+				status = ::napi_get_value_string_latin1(ctx.env, val, (char*)value_.data(), value_.size(), &len);
+				NODE_EMBIND_ERROR_NAPICALL_CHECK(ctx.env, status);
 			}
 		}
 
-		inline static ::napi_value napivalue(napi_env env, type val) {
+		inline static ::napi_value napivalue(const context_t& ctx, type val) {
 			napi_status status;
 			::napi_value res;
 			if (Module::EMBIND_STD_STRING_IS_UTF8) {
-				status = ::napi_create_string_utf8(env, val.data(), val.size(), &res);
+				status = ::napi_create_string_utf8(ctx.env, val.data(), val.size(), &res);
 			}
 			else {
-				status = ::napi_create_string_latin1(env, val.data(), val.size(), &res);
+				status = ::napi_create_string_latin1(ctx.env, val.data(), val.size(), &res);
 			}
-			NODE_EMBIND_ERROR_NAPICALL_CHECK(env, status);
+			NODE_EMBIND_ERROR_NAPICALL_CHECK(ctx.env, status);
 			return res;
 		}
 	};
@@ -58,29 +58,29 @@ namespace convertor {
 
 	template<typename T>
 	struct String<const T> : public String<T> {
-		String(napi_env env, ::napi_value val)
-			: String<T>(env, val)
+		String(const context_t& ctx, ::napi_value val)
+			: String<T>(ctx, val)
 		{}
 	};
 
 	template<typename T>
 	struct String<T&> : public String<T> {
-		String(napi_env env, ::napi_value val)
-			: String<T>(env, val)
+		String(const context_t& ctx, ::napi_value val)
+			: String<T>(ctx, val)
 		{}
 	};
 
 	template<typename T>
 	struct String<const T&> : public String<T> {
-		String(napi_env env, ::napi_value val)
-			: String<T>(env,val)
+		String(const context_t& ctx, ::napi_value val)
+			: String<T>(ctx,val)
 		{}
 	};
 
 	template<typename T>
 	struct String<T&&> {
-		String(napi_env env, ::napi_value val)
-			: String<T>(env, val)
+		String(const context_t& ctx, ::napi_value val)
+			: String<T>(ctx, val)
 		{}
 
 	};

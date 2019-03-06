@@ -9,34 +9,34 @@ NS_NAPI_BEGIN
 namespace convertor {
 
     template<typename T>
-    inline T* GetObject(napi_env env, napi_value val)
+    inline T* GetObject(const context_t& ctx, napi_value val)
     {
         napi::Class<T>* wobj = nullptr;
-        napi_status status = napi_unwrap(env, val, (void**)&wobj);
+        napi_status status = napi_unwrap(ctx.env, val, (void**)&wobj);
 
-        NODE_EMBIND_ERROR_NAPICALL_CHECK(env, status);
+        NODE_EMBIND_ERROR_NAPICALL_CHECK(ctx.env, status);
 
         return wobj->instance;
     }
 
     template<typename T>
-    inline static napi_value CreateObject(napi_env env, T* obj, bool by_val = true /*or by reference*/) {
+    inline static napi_value CreateObject(const context_t& ctx, T* obj, bool by_val = true /*or by reference*/) {
 
         napi_value ctor = nullptr;
         class_t* prototype = napi::Class<T>::prototype;
-        napi_status status = napi_get_reference_value(env, prototype->ref, &ctor);
-        NODE_EMBIND_ERROR_NAPICALL_CHECK(env, status);
+        napi_status status = napi_get_reference_value(ctx.env, prototype->ref, &ctor);
+        NODE_EMBIND_ERROR_NAPICALL_CHECK(ctx.env, status);
 
         size_t argc = 2;
         napi_value argv[2] = { nullptr,nullptr };
         napi_value instance;
-        napi_create_external(env, obj, nullptr, nullptr, &argv[0]);
+        napi_create_external(ctx.env, obj, nullptr, nullptr, &argv[0]);
         
-        napi_get_boolean(env, by_val, &argv[1]);
+        napi_get_boolean(ctx.env, by_val, &argv[1]);
         
 
-        status = napi_new_instance(env, ctor, argc, argv, &instance);
-        NODE_EMBIND_ERROR_NAPICALL_CHECK(env, status);
+        status = napi_new_instance(ctx.env, ctor, argc, argv, &instance);
+        NODE_EMBIND_ERROR_NAPICALL_CHECK(ctx.env, status);
         return instance;
 
     }
@@ -52,13 +52,13 @@ namespace convertor {
         type& value() { return *this->value_; }
         
 
-        Class (napi_env env, napi_value val) {
-            this->value_ = GetObject<T>(env,val);
+        Class (const context_t& ctx, napi_value val) {
+            this->value_ = GetObject<T>(ctx,val);
         }
 
-        inline static napi_value napivalue(napi_env env, type val) {
+        inline static napi_value napivalue(const context_t& ctx, type val) {
 
-            return CreateObject<T>(env, &val, true);
+            return CreateObject<T>(ctx, &val, true);
         }
     };
 
@@ -70,13 +70,13 @@ namespace convertor {
         type& value() { return *this->value_; }
 
 
-        Class(napi_env env, napi_value val) {
-            this->value_ = GetObject<T>(env, val);
+        Class(const context_t& ctx, napi_value val) {
+            this->value_ = GetObject<T>(ctx, val);
         }
 
-        inline static napi_value napivalue(napi_env env, T& val) {
+        inline static napi_value napivalue(const context_t& ctx, T& val) {
 
-            return CreateObject<T>(env, &val, false);
+            return CreateObject<T>(ctx, &val, false);
         }
     };
 
@@ -88,13 +88,13 @@ namespace convertor {
         const T& value() { return *this->value_; }
 
 
-        Class(napi_env env, napi_value val) {
-            this->value_ = GetObject<T>(env, val);
+        Class(const context_t& ctx, napi_value val) {
+            this->value_ = GetObject<T>(ctx, val);
         }
 
-        inline static napi_value napivalue(napi_env env, type val) {
+        inline static napi_value napivalue(const context_t& ctx, type val) {
 
-            return CreateObject<T>(env, const_cast<T*>(&val), false);
+            return CreateObject<T>(ctx, const_cast<T*>(&val), false);
         }
     };
 
@@ -105,13 +105,13 @@ namespace convertor {
         T* value() { return this->value_; }
 
 
-        Class(napi_env env, napi_value val) {
-            this->value_ = GetObject<T>(env, val);
+        Class(const context_t& ctx, napi_value val) {
+            this->value_ = GetObject<T>(ctx, val);
         }
 
-        inline static napi_value napivalue(napi_env env, T* val) {
+        inline static napi_value napivalue(const context_t& ctx, T* val) {
 
-            return CreateObject<T>(env, val, false);
+            return CreateObject<T>(ctx, val, false);
 
         }
     };
@@ -124,13 +124,13 @@ namespace convertor {
         const T* value() { return this->value_; }
 
 
-        Class(napi_env env, napi_value val) {
-            this->value_ = GetObject<T>(env, val);
+        Class(const context_t& ctx, napi_value val) {
+            this->value_ = GetObject<T>(ctx, val);
         }
 
-        inline static napi_value napivalue(napi_env env, type val) {
+        inline static napi_value napivalue(const context_t& ctx, type val) {
 
-            return CreateObject<T>(env, const_cast<T*>(val), false);
+            return CreateObject<T>(ctx, const_cast<T*>(val), false);
 
         }
     };
@@ -143,13 +143,13 @@ namespace convertor {
         type& value() { return *this->value_; }
 
 
-        Class(napi_env env, napi_value val) {
-            this->value_ = GetObject<T>(env, val);
+        Class(const context_t& ctx, napi_value val) {
+            this->value_ = GetObject<T>(ctx, val);
         }
 
-        inline static napi_value napivalue(napi_env env, type val) {
+        inline static napi_value napivalue(const context_t& ctx, type val) {
 
-            return CreateObject<T>(env, &val, false);
+            return CreateObject<T>(ctx, &val, false);
         }
     };
 }

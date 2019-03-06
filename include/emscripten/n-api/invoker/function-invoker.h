@@ -5,7 +5,7 @@
 #include <emscripten/n-api/value.h>
 
 #ifndef _arg
-#define _arg(n) napi::value<T##n>(env, argv[n]).value()
+#define _arg(n) napi::value<T##n>(ctx.env, ctx.argv[n]).value()
 #endif
 
 
@@ -19,7 +19,7 @@ template<typename ReturnType>
 struct FunctionInvoker <ReturnType>
 {
     template<typename ClassType>
-    inline static ReturnType invoke(napi_env env, napi_value argv[], ClassType* inst,
+    inline static ReturnType invoke(const context_t& ctx, ClassType* inst,
         ReturnType(*fn)(ClassType&)) {
         return  fn(*inst);
     }
@@ -30,7 +30,7 @@ template<typename ReturnType, typename T0>
 struct FunctionInvoker <ReturnType, T0>
 {
     template<typename ClassType>
-    inline static ReturnType invoke(napi_env env, napi_value argv[], ClassType* inst,
+    inline static ReturnType invoke(const context_t& ctx, ClassType* inst,
         ReturnType(*fn)(ClassType&, T0)) {
         return  fn(*inst, _arg(0));
     }
@@ -41,7 +41,7 @@ template<typename ReturnType, typename T0, typename T1>
 struct FunctionInvoker <ReturnType, T0, T1>
 {
     template<typename ClassType>
-    inline static ReturnType invoke(napi_env env, napi_value argv[], ClassType* inst,
+    inline static ReturnType invoke(const context_t& ctx, ClassType* inst,
         ReturnType(*fn)(ClassType&, T0, T1)) {
         return  fn(*inst, _arg(0), _arg(1));
     }

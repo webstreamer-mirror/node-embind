@@ -98,7 +98,7 @@ namespace emscripten {
                 const napi::context_t& ctx)
             {
                 if (self->argc == ctx.argc) {
-                    return napi::value<ReturnType>::napivalue(ctx.env, I::invoke(ctx.env, ctx.argv, (Fn)self->function));
+                    return napi::value<ReturnType>::napivalue(ctx, I::invoke(ctx, (Fn)self->function));
                 }
 
                 // recursion to find out override functin
@@ -125,7 +125,7 @@ namespace emscripten {
             static napi_value invoke(const napi::function_t* self, const napi::context_t& ctx)
             {
                 if (self->argc == ctx.argc) {
-                    I::invoke(ctx.env, ctx.argv, (Fn)self->function);
+                    I::invoke(ctx, (Fn)self->function);
                     return nullptr;
                 }
 
@@ -188,8 +188,7 @@ namespace emscripten {
                 NODE_EMBIND_ERROR_INVALID_INSTANCE_CHECK(ctx.env, self->instance);
 
                 
-                return napi::value<ReturnType>::napivalue(ctx.env,
-                    I::invoke(ctx.env, ctx.argv, self->instance, fn));
+                return napi::value<ReturnType>::napivalue(ctx, I::invoke(ctx, self->instance, fn));
             }
         };
 
@@ -207,7 +206,7 @@ namespace emscripten {
                 NODE_EMBIND_ERROR_NAPICALL_CHECK(ctx.env, status);
         
                 NODE_EMBIND_ERROR_INVALID_INSTANCE_CHECK(ctx.env, self->instance);
-                I::invoke(ctx.env, ctx.argv, self->instance, fn);
+                I::invoke(ctx, self->instance, fn);
                 return nullptr;
             }
         };
@@ -234,8 +233,7 @@ namespace emscripten {
 
                 NODE_EMBIND_ERROR_INVALID_INSTANCE_CHECK(ctx.env, self->instance);
 
-                return napi::value<ReturnType>::napivalue(ctx.env,
-                    I::invoke(ctx.env, ctx.argv, self->instance, method));
+                return napi::value<ReturnType>::napivalue(ctx, I::invoke(ctx, self->instance, method));
             }
         };
 
@@ -257,7 +255,7 @@ namespace emscripten {
                 NODE_EMBIND_ERROR_NAPICALL_CHECK(ctx.env, status);
 
                 NODE_EMBIND_ERROR_INVALID_INSTANCE_CHECK(ctx.env, self->instance);
-                I::invoke(ctx.env, ctx.argv, self->instance, method);
+                I::invoke(ctx, self->instance, method);
                 return nullptr;
             }
         };
@@ -278,7 +276,7 @@ namespace emscripten {
                 NODE_EMBIND_ERROR_INVALID_INSTANCE_CHECK(ctx.env, self->instance);
 
                 ClassType& inst = *self->instance;
-                return napi::value<MemberType>::napivalue(ctx.env, inst.*field);
+                return napi::value<MemberType>::napivalue(ctx, inst.*field);
             }
 
             template<typename ClassType>
@@ -295,7 +293,7 @@ namespace emscripten {
 
                 ClassType& inst = *self->instance;
 
-                inst.*field = napi::value<MemberType>(ctx.env, ctx.argv[0]).value();
+                inst.*field = napi::value<MemberType>(ctx, ctx.argv[0]).value();
                 return nullptr;
 
             }
@@ -309,14 +307,14 @@ namespace emscripten {
 
                 FieldType* field = (FieldType*)self->getter_context;
 
-                return napi::value<FieldType>::napivalue(ctx.env,*field);
+                return napi::value<FieldType>::napivalue(ctx,*field);
 
             }
             static napi_value set(const napi::property_t* self, const napi::context_t& ctx) {
 
                 FieldType* field = (FieldType*)self->getter_context;
 
-                *field = napi::value<FieldType>(ctx.env,ctx.argv[0]).value();
+                *field = napi::value<FieldType>(ctx,ctx.argv[0]).value();
                 return nullptr;
 
             }
@@ -349,8 +347,8 @@ namespace emscripten {
 
                 NODE_EMBIND_ERROR_INVALID_INSTANCE_CHECK(ctx.env, self->instance);
 
-                return napi::value<ReturnType>::napivalue(ctx.env,
-                    napi::MemberInvoker<ReturnType>::invoke(ctx.env, ctx.argv, self->instance, context));
+                return napi::value<ReturnType>::napivalue(ctx,
+                    napi::MemberInvoker<ReturnType>::invoke(ctx, self->instance, context));
             }
 
             static void* getContext(Context context) {
@@ -374,7 +372,7 @@ namespace emscripten {
 
                 NODE_EMBIND_ERROR_INVALID_INSTANCE_CHECK(ctx.env, self->instance);
 
-                return napi::value<ReturnType>::napivalue(ctx.env, context(*self->instance));
+                return napi::value<ReturnType>::napivalue(ctx, context(*self->instance));
             }
 
             static void* getContext(Context context) {
@@ -402,7 +400,7 @@ namespace emscripten {
                 NODE_EMBIND_ERROR_INVALID_INSTANCE_CHECK(ctx.env, self->instance);
 
                 typedef napi::MemberInvoker<void, SetterArgumentType> I;
-                I::invoke(ctx.env, ctx.argv, self->instance, context);
+                I::invoke(ctx, self->instance, context);
                 return nullptr;
             }
 
@@ -429,7 +427,7 @@ namespace emscripten {
                 NODE_EMBIND_ERROR_INVALID_INSTANCE_CHECK(ctx.env, self->instance);
 
                 context(*self->instance,
-                    napi::value<SetterArgumentType>(ctx.env, ctx.argv[0]).value());
+                    napi::value<SetterArgumentType>(ctx, ctx.argv[0]).value());
                 return nullptr;
             }
 
@@ -457,7 +455,7 @@ namespace emscripten {
             NODE_EMBIND_ERROR_NAPICALL_RETURN(ctx.env, status, nullptr);
             NODE_EMBIND_ERROR_INVALID_INSTANCE_RETURN(ctx.env, self->instance, nullptr);
 
-            return napi::value<ElementType>::napivalue(ctx.env, (*self->instance)[index]);
+            return napi::value<ElementType>::napivalue(ctx, (*self->instance)[index]);
         }
 
         template<typename ClassType, typename ElementType>
@@ -469,7 +467,7 @@ namespace emscripten {
             NODE_EMBIND_ERROR_NAPICALL_RETURN(ctx.env, status,nullptr);
             NODE_EMBIND_ERROR_INVALID_INSTANCE_RETURN(ctx.env, self->instance, nullptr);
 
-            (*self->instance)[index] = napi::value<ElementType>(ctx.env, ctx.argv[0]).value();
+            (*self->instance)[index] = napi::value<ElementType>(ctx, ctx.argv[0]).value();
 
             return nullptr;
         }
@@ -644,7 +642,7 @@ namespace emscripten {
             static void* invoke(const napi::constructor_t* self, const napi::context_t& ctx)
             {
                 assert(ctx.argc == sizeof...(Args));
-                return I::invoke(ctx.env, ctx.argv, (Fn)self->function);
+                return I::invoke(ctx, (Fn)self->function);
             }
         };
     }

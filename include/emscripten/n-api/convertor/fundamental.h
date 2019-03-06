@@ -17,18 +17,18 @@ namespace convertor {
 		type     value_;
         inline type value() { return value_; }
 
-		Fundamental(napi_env env, napi_value val)
+		Fundamental(const context_t& ctx, napi_value val)
 		{
 			napi_status status;
-			status = napi_get_value_bool(env, val, &this->value_);
-			NODE_EMBIND_ERROR_NAPICALL_CHECK(env, status);
+			status = napi_get_value_bool(ctx.env, val, &this->value_);
+			NODE_EMBIND_ERROR_NAPICALL_CHECK(ctx.env, status);
 		}
 
-		inline static napi_value napivalue(napi_env env, type val) {
+		inline static napi_value napivalue(const context_t& ctx, type val) {
 			napi_status status;
-			::napi_value res;
-			status  = napi_get_boolean(env, val, &res);
-			NODE_EMBIND_ERROR_NAPICALL_CHECK(env, status);
+			napi_value res;
+			status  = napi_get_boolean(ctx.env, val, &res);
+			NODE_EMBIND_ERROR_NAPICALL_CHECK(ctx.env, status);
 			return res;
 		}
 	};
@@ -40,30 +40,30 @@ namespace convertor {
 		type     value_;
         inline type value() { return value_; }
 
-		Fundamental(napi_env env, napi_value val)
+		Fundamental(const context_t& ctx, napi_value val)
 		{
 			napi_status status;
 			if (sizeof(int) == 64) {
-				status = napi_get_value_int64(env, val, (int64_t*)&this->value_);
+				status = napi_get_value_int64(ctx.env, val, (int64_t*)&this->value_);
 			}
 			else {
-				status = napi_get_value_int32(env, val, (int32_t*)&this->value_);
+				status = napi_get_value_int32(ctx.env, val, (int32_t*)&this->value_);
 			}
 
-			NODE_EMBIND_ERROR_NAPICALL_CHECK(env, status);
+			NODE_EMBIND_ERROR_NAPICALL_CHECK(ctx.env, status);
 		}
 
-		inline static napi_value napivalue(napi_env env, type val) {
+		inline static napi_value napivalue(const context_t& ctx, type val) {
 			napi_status status;
-			::napi_value res;
+			napi_value res;
 			if (sizeof(int) == 64) {
-				status = napi_create_int64(env, (int64_t)val, &res);
+				status = napi_create_int64(ctx.env, (int64_t)val, &res);
 			}
 			else {
-				status = napi_create_int32(env, (int32_t)val, &res);
+				status = napi_create_int32(ctx.env, (int32_t)val, &res);
 			}
 			
-			NODE_EMBIND_ERROR_NAPICALL_CHECK(env, status);
+			NODE_EMBIND_ERROR_NAPICALL_CHECK(ctx.env, status);
 
 			return res;
 		}
@@ -75,18 +75,18 @@ namespace convertor {
 		double     value_;
         inline type value() { return value_; }
 
-		Fundamental(napi_env env, napi_value val)
+		Fundamental(const context_t& ctx, napi_value val)
 		{
 			napi_status status;
-			status =napi_get_value_double(env, val, &this->value_);
-			NODE_EMBIND_ERROR_NAPICALL_CHECK(env, status);
+			status =napi_get_value_double(ctx.env, val, &this->value_);
+			NODE_EMBIND_ERROR_NAPICALL_CHECK(ctx.env, status);
 		}
 
-		inline static napi_value napivalue(napi_env env, type val) {
+		inline static napi_value napivalue(const context_t& ctx, type val) {
 			napi_status status;
-			::napi_value res;
-			status =napi_create_double(env, (double)val, &res);
-			NODE_EMBIND_ERROR_NAPICALL_CHECK(env, status);
+			napi_value res;
+			status =napi_create_double(ctx.env, (double)val, &res);
+			NODE_EMBIND_ERROR_NAPICALL_CHECK(ctx.env, status);
 			return res;
 		}
 
@@ -98,18 +98,18 @@ namespace convertor {
 		type     value_;
         inline type value() { return value_; }
 
-		Fundamental(napi_env env, napi_value val)
+		Fundamental(const context_t& ctx, napi_value val)
 		{
 			napi_status status;
-			status = napi_get_value_double(env, val, &this->value_);
-			NODE_EMBIND_ERROR_NAPICALL_CHECK(env, status);
+			status = napi_get_value_double(ctx.env, val, &this->value_);
+			NODE_EMBIND_ERROR_NAPICALL_CHECK(ctx.env, status);
 		}
 
-		inline static napi_value napivalue(napi_env env, type val) {
+		inline static napi_value napivalue(const context_t& ctx, type val) {
 			napi_status status;
-			::napi_value res;
-			status = napi_create_double(env, (double)val, &res);
-			NODE_EMBIND_ERROR_NAPICALL_CHECK(env, status);
+			napi_value res;
+			status = napi_create_double(ctx.env, (double)val, &res);
+			NODE_EMBIND_ERROR_NAPICALL_CHECK(ctx.env, status);
 			return res;
 		}
 
@@ -122,17 +122,17 @@ namespace convertor {
 		type     value_;
         inline type value() { return value_; }
 
-		Fundamental(napi_env env, napi_value val) {
+		Fundamental(const context_t& ctx, napi_value val) {
 			napi_status status;
-			status = napi_get_value_int64(env, val, &this->value_);
-			NODE_EMBIND_ERROR_NAPICALL_CHECK(env, status);
+			status = napi_get_value_int64(ctx.env, val, &this->value_);
+			NODE_EMBIND_ERROR_NAPICALL_CHECK(ctx.env, status);
 		}
 
-		inline static napi_value napivalue(napi_env env, type val) {
+		inline static napi_value napivalue(const context_t& ctx, type val) {
 			napi_status status;
-			::napi_value res;
-			status = napi_create_int64(env, val, &res);
-			NODE_EMBIND_ERROR_NAPICALL_CHECK(env, status);
+			napi_value res;
+			status = napi_create_int64(ctx.env, val, &res);
+			NODE_EMBIND_ERROR_NAPICALL_CHECK(ctx.env, status);
 			return res;
 		}
 
@@ -144,17 +144,17 @@ namespace convertor {
 		type     value_;
         inline type value() { return value_; }
 
-		Fundamental(napi_env env, napi_value val) {
+		Fundamental(const context_t& ctx, napi_value val) {
 			napi_status status;
-			status = napi_get_value_int64(env, val, (int64_t*)&this->value_);
-			NODE_EMBIND_ERROR_NAPICALL_CHECK(env, status);
+			status = napi_get_value_int64(ctx.env, val, (int64_t*)&this->value_);
+			NODE_EMBIND_ERROR_NAPICALL_CHECK(ctx.env, status);
 		}
 
-		inline static napi_value napivalue(napi_env env, type val) {
+		inline static napi_value napivalue(const context_t& ctx, type val) {
 			napi_status status;
-			::napi_value res;
-			status = napi_create_int64(env, val, &res);
-			NODE_EMBIND_ERROR_NAPICALL_CHECK(env, status);
+			napi_value res;
+			status = napi_create_int64(ctx.env, val, &res);
+			NODE_EMBIND_ERROR_NAPICALL_CHECK(ctx.env, status);
 			return res;
 		}
 
@@ -162,40 +162,31 @@ namespace convertor {
 
 	template<typename T>
 	struct Fundamental<const T> : public Fundamental<T> {
-		Fundamental(napi_env env, napi_value val)
-			: Fundamental<T>(env, val)
+		Fundamental(const context_t& ctx, napi_value val)
+			: Fundamental<T>(ctx, val)
 		{}
 	};
 
 	template<typename T>
 	struct Fundamental<T&> : public Fundamental<T> {
-		Fundamental(napi_env env, napi_value val)
-			: Fundamental<T>(env, val)
+		Fundamental(const context_t& ctx, napi_value val)
+			: Fundamental<T>(ctx, val)
 		{}
 	};
 
 	template<typename T>
 	struct Fundamental<const T&> : public Fundamental<T> {
-		Fundamental(napi_env env, napi_value val)
-			: Fundamental<T>(env, val)
+		Fundamental(const context_t& ctx, napi_value val)
+			: Fundamental<T>(ctx, val)
 		{}
 	};
 
     template<typename T>
     struct Fundamental<T&&> : public Fundamental<T> {
-        Fundamental(napi_env env, napi_value val)
-            : Fundamental<T>(env,val)
+        Fundamental(const context_t& ctx, napi_value val)
+            : Fundamental<T>(ctx,val)
         {}
     };
-
-	//template<typename T>
-	//struct Fundamental<T&&> {
-	//	typedef typename Fundamental<T>::type type;
-	//	Fundamental<T> obj_;
-	//	Fundamental(napi_env env)
-    //        : Fundamental<T>(env)
-	//	{}
-	//};
 
 }
 NS_NAPI_END
