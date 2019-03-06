@@ -35,7 +35,7 @@ EMSCRIPTEN_BINDINGS(value_boject) {
         .field("v1", &ValueObject::v1)
         .field("v2", &ValueObject::v2Get, &ValueObject::v2Set)
         .field("v3", &v3Get, &v3Set)
-        .field("v4", index<3>())
+        .field("v4", emscripten::index<3>())
         ;
     function("take_and_return_ValueObject", &take_and_return_ValueObject);
 
