@@ -6,6 +6,7 @@ var chai = require('chai'),
 describe('value_object', function () {
     const {
         ValueObject,
+        take_and_return_ValueObject
     } = addons.value_object;
 
     it('#value_object', function () {
@@ -21,6 +22,17 @@ describe('value_object', function () {
         assert.strictEqual(c.v4,4);
 
         c.delete();
+
+    });
+
+    it('#JS Object', function () {
+
+        var c = take_and_return_ValueObject({v2:2,v3:3,v4:4})
+
+        assert.strictEqual(c.v1,100);
+        assert.strictEqual(c.v2,2);
+        assert.strictEqual(c.v3,3);
+        assert.strictEqual(c.v4,4);
 
     });
 

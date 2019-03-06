@@ -4,17 +4,17 @@
 
 #define NODE_EMBIND_ERROR_NAPICALL     "10000"
 #define NODE_EMBIND_ERROR_NAPICALL_MSG(status) _node_embind_napi_call_error(status)
-#define NODE_EMBIND_ERROR_NAPICALL_THROW(env) \
+#define NODE_EMBIND_ERROR_NAPICALL_THROW(env,status) \
    ::napi_throw_error(env, NODE_EMBIND_ERROR_NAPICALL, NODE_EMBIND_ERROR_NAPICALL_MSG(status));
 #define NODE_EMBIND_ERROR_NAPICALL_RETURN(env, status, returncode) \
    if(status != napi_ok ) {\
-     NODE_EMBIND_ERROR_NAPICALL_THROW(env);\
+     NODE_EMBIND_ERROR_NAPICALL_THROW(env,status);\
      return returncode;\
    }
 
 #define NODE_EMBIND_ERROR_NAPICALL_CHECK(env, status) \
    if(status != napi_ok ) {\
-     NODE_EMBIND_ERROR_NAPICALL_THROW(env);\
+     NODE_EMBIND_ERROR_NAPICALL_THROW(env, status);\
    }
 
 #define NODE_EMBIND_ERROR_ARGC     "10100"

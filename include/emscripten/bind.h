@@ -298,6 +298,15 @@ namespace emscripten {
 
             }
 
+            template<typename ClassType>
+            static void object_set(const napi::property_t* prototype, const napi::context_t& ctx,
+                void* pinst, napi_value value) {
+
+                ClassType& inst = *static_cast<ClassType*>(pinst);
+                MemberPointer& field = *static_cast<MemberPointer*>(prototype->setter_context);
+
+                inst.*field = napi::value<MemberType>(ctx, value).value();
+            }
         };
 
         template<typename FieldType>
@@ -404,6 +413,20 @@ namespace emscripten {
                 return nullptr;
             }
 
+            template<typename ClassType>
+            static void object_set(const napi::property_t* prototype, const napi::context_t& ctx,
+                void* pinst, napi_value value) {
+                Context context = *static_cast<Context*>(prototype->setter_context);
+                
+
+                typedef napi::MemberInvoker<void, SetterArgumentType> I;
+                napi::context_t c = ctx;
+ 
+                c.argc = 1;
+                c.argv = &value;
+                I::invoke(c, static_cast<ClassType*>(pinst), context);
+            }
+
             static void* getContext(Context context) {
                 return internal::getContext(context);
             }
@@ -431,6 +454,14 @@ namespace emscripten {
                 return nullptr;
             }
 
+            template<typename ClassType>
+            static void object_set(const napi::property_t* prototype, const napi::context_t& ctx,
+                void* pinst, napi_value value) {
+                Context context = *static_cast<Context*>(prototype->setter_context);
+                ClassType& inst = *static_cast<ClassType*>(pinst);
+
+                context(inst, napi::value<SetterArgumentType>(ctx, value).value());
+            }
 
             static void* getContext(Context context) {
                 return internal::getContext(context);
@@ -471,6 +502,18 @@ namespace emscripten {
 
             return nullptr;
         }
+
+        template<typename ClassType, typename ElementType>
+        static napi_value object_set_by_index(const napi::property_t* prototype, const napi::context_t& ctx,
+            void* pinst, napi_value value) {
+            int index = (int)(int64_t)prototype->setter_context;
+            ClassType& inst = *static_cast<ClassType*>(pinst);
+
+            inst[index] = napi::value<ElementType>(ctx, value).value();
+
+            return nullptr;
+        }
+
     }
 
     template<int Index>
@@ -506,14 +549,15 @@ namespace emscripten {
 
             auto getter = &MemberAccess<ClassType, FieldType>::template get<ClassType>;
             auto setter = &MemberAccess<ClassType, FieldType>::template set<ClassType>;
-
+            auto object_setter = &MemberAccess<ClassType, FieldType>::template object_set<ClassType>;
             napi::register_class_property(
                 TypeID<ClassType>::get(),
                 fieldName,
                 reinterpret_cast<GenericFunction>(getter),
                 getContext(field),
                 reinterpret_cast<GenericFunction>(setter),
-                getContext(field));
+                getContext(field),
+                reinterpret_cast<GenericFunction>(object_setter));
 
             return *this;
         }
@@ -530,14 +574,15 @@ namespace emscripten {
 
             auto g = &GP::template get<ClassType>;
             auto s = &SP::template set<ClassType>;
-
+            auto os = &SP::template object_set<ClassType>;
             napi::register_class_property(
                 TypeID<ClassType>::get(),
                 fieldName,
                 reinterpret_cast<GenericFunction>(g),
                 getContext(getter),
                 reinterpret_cast<GenericFunction>(s),
-                getContext(setter));
+                getContext(setter),
+                reinterpret_cast<GenericFunction>(os));
 
             return *this;
         }
@@ -550,25 +595,16 @@ namespace emscripten {
 
             auto getter = &internal::get_by_index<ClassType, ElementType>;
             auto setter = &internal::set_by_index<ClassType, ElementType>;
-
+            auto osetter = &internal::object_set_by_index<ClassType, ElementType>;
+            
             napi::register_class_property(
                 TypeID<ClassType>::get(),
                 fieldName,
                 reinterpret_cast<GenericFunction>(getter),
                 reinterpret_cast<void*>(Index),
                 reinterpret_cast<GenericFunction>(setter),
-                reinterpret_cast<void*>(Index) );
-            //_embind_register_value_object_field(
-            //    TypeID<ClassType>::get(),
-            //    fieldName,
-            //    TypeID<ElementType>::get(),
-            //    getSignature(getter),
-            //    reinterpret_cast<GenericFunction>(getter),
-            //    reinterpret_cast<void*>(Index),
-            //    TypeID<ElementType>::get(),
-            //    getSignature(setter),
-            //    reinterpret_cast<GenericFunction>(setter),
-            //    reinterpret_cast<void*>(Index));
+                reinterpret_cast<void*>(Index),
+                reinterpret_cast<GenericFunction>(osetter) );
             return *this;
         }
 

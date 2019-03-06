@@ -8,6 +8,9 @@
 #include <emscripten/bind.h>
 
 struct ValueObject {
+    ValueObject()
+        : v1(100), v2(200), v3(300), v4(400)
+    {}
 
     int v1;
     int v2;
@@ -28,6 +31,9 @@ ValueObject take_and_return_ValueObject(ValueObject v) {
     return v;
 }
 
+//void take_and_return_ValueObject(ValueObject v) {
+//    std::cout << "---------------" << std::endl;
+//}
 EMSCRIPTEN_BINDINGS(value_boject) {
 
     using namespace emscripten;

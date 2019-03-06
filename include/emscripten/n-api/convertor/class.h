@@ -11,12 +11,19 @@ namespace convertor {
     template<typename T>
     inline T* GetObject(const context_t& ctx, napi_value val)
     {
+
         napi::Class<T>* wobj = nullptr;
         napi_status status = napi_unwrap(ctx.env, val, (void**)&wobj);
+        if (status == napi_ok) {
+            return wobj->instance;
+        }
 
-        NODE_EMBIND_ERROR_NAPICALL_CHECK(ctx.env, status);
-
-        return wobj->instance;
+        // if this Javascript object
+        if (napi::Class<T>::prototype->subtype != class_t::value_object) {
+            NODE_EMBIND_ERROR_NAPICALL_THROW(ctx.env, status);
+        }
+        
+        return nullptr;
     }
 
     template<typename T>
@@ -53,7 +60,35 @@ namespace convertor {
         
 
         Class (const context_t& ctx, napi_value val) {
+            
             this->value_ = GetObject<T>(ctx,val);
+            if (!this->value_ && napi::Class<T>::prototype->subtype == class_t::value_object) {
+            //    ///////////////////////////////////////////////////////
+            //    // -- TODO
+            //    // --
+            //    // --
+            //    // --
+            //    
+                T* instance = new T();
+                std::list<property_t*>& props = napi::Class<T>::prototype->property;
+                for (std::list<property_t*>::iterator it = props.begin();
+                    it != props.end(); it++) {
+                
+                    property_t& prop = *(*it);
+                    napi_value key,value;
+                    napi_status status;
+                    napi_valuetype vtype;
+                    status = napi_create_string_latin1(ctx.env, prop.name, NAPI_AUTO_LENGTH, &key);
+                    status = napi_get_property(ctx.env, val, key, &value);
+                    status = napi_typeof(ctx.env, value, &vtype);
+                    if (vtype == napi_undefined)
+                        continue;
+                
+                    prop.object_setter(&prop, ctx, instance, value);
+                }
+                this->value_ = instance;
+
+            }
         }
 
         inline static napi_value napivalue(const context_t& ctx, type val) {

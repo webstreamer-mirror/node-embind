@@ -6,15 +6,17 @@ NS_NAPI_BEGIN
 
 struct property_t {
 	property_t()
-		: name(nullptr), getter(nullptr), setter(nullptr)
-		, setter_context(nullptr), getter_context(nullptr)
+		: name(nullptr), getter(nullptr), setter(nullptr), object_setter(nullptr)
+		, setter_context(nullptr), getter_context(nullptr), object_setter_context(nullptr)
         , attributes(napi_default)
 	{}
 	const char* name;
 	napi_value(*getter)(const property_t*, const context_t&);
 	napi_value(*setter)(const property_t*, const context_t&);
+    void(*object_setter)(const napi::property_t*, const napi::context_t&, void*, napi_value);
 	void* setter_context;
 	void* getter_context;
+    void* object_setter_context;
     napi_property_attributes attributes;
 };
 

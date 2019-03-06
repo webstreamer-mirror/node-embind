@@ -38,12 +38,11 @@ namespace emscripten {
 			};
 
 			inline static napi_value napi_method(napi_env env, napi_callback_info info) {
+
 				context_t ctx;
 				ctx.env = env;
 				ctx.argv = nullptr;
 				cur_env(env);
-
-				//NodeJS::Scope scope = NodeJS::Scope(env);
 
 				napi_get_cb_info(env, info, &ctx.argc, nullptr, &ctx.js, &ctx.data);
 				if (ctx.argc > 0)

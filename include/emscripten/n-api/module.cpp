@@ -111,7 +111,9 @@ void register_class_property(
 	GenericFunction getter,
 	void* getterContext,
 	GenericFunction setter,
-	void* setterContext)
+	void* setterContext,
+    GenericFunction object_setter)
+
 {
 	module_t& m = node_module();
 	property_t* prop = new property_t;
@@ -125,6 +127,11 @@ void register_class_property(
 
 	prop->getter = (Getter)getter;
 	prop->getter_context = getterContext;
+
+    typedef void(*OSetter)(const property_t*, const context_t&,void*, napi_value);
+    prop->object_setter = (OSetter)object_setter;
+
+
 	m.classes[classType]->property.push_back(prop);
 }
 

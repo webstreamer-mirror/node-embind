@@ -111,7 +111,8 @@ void register_class_property(
 	GenericFunction getter,
 	void* getterContext,
 	GenericFunction setter,
-	void* setterContext);
+	void* setterContext,
+    GenericFunction object_setter=nullptr );
 
 void register_class_function(
     TYPEID classType,
