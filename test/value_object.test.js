@@ -20,6 +20,8 @@ describe('value_object', function () {
         assert.strictEqual(c.v3,3);
         assert.strictEqual(c.v4,4);
 
+        c.delete();
+
     });
 
 

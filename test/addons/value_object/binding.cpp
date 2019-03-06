@@ -24,6 +24,9 @@ struct ValueObject {
 int  v3Get(const ValueObject& vo) { return vo.v3; }
 void v3Set(ValueObject& vo,int v) { vo.v3 = v; }
 
+ValueObject take_and_return_ValueObject(ValueObject v) {
+    return v;
+}
 
 EMSCRIPTEN_BINDINGS(value_boject) {
 
@@ -34,6 +37,8 @@ EMSCRIPTEN_BINDINGS(value_boject) {
         .field("v3", &v3Get, &v3Set)
         .field("v4", index<3>())
         ;
+    function("take_and_return_ValueObject", &take_and_return_ValueObject);
+
 }
 
 #ifdef EMSCRIPTEN_NODE_EMBIND
