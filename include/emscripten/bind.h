@@ -521,6 +521,91 @@ namespace emscripten {
     };
 
     ////////////////////////////////////////////////////////////////////////////////
+    // VALUE TUPLES
+    ////////////////////////////////////////////////////////////////////////////////
+
+    template<typename ClassType>
+    class value_array : public internal::noncopyable {
+    public:
+        typedef ClassType class_type;
+
+        value_array(const char* name) {
+            using namespace internal;
+
+            auto New = napi::Class<ClassType>::New;
+            auto Delete = napi::Class<ClassType>::Delete;
+            napi::register_class(
+                name,
+                TypeID<ClassType>::get(),
+                reinterpret_cast<GenericFunction>(New),
+                reinterpret_cast<GenericFunction>(Delete),
+                &napi::Class<ClassType>::prototype,
+                napi::class_t::value_array);
+        }
+
+        template<typename InstanceType, typename ElementType>
+        value_array& element(ElementType InstanceType::*field) {
+            using namespace internal;
+
+            auto getter = &MemberAccess<ClassType, ElementType>::template get<ClassType>;
+            auto setter = &MemberAccess<ClassType, ElementType>::template set<ClassType>;
+            auto object_setter = &MemberAccess<ClassType, ElementType>::template object_set<ClassType>;
+            napi::register_class_property(
+                TypeID<ClassType>::get(),
+                nullptr,
+                reinterpret_cast<GenericFunction>(getter),
+                getContext(field),
+                reinterpret_cast<GenericFunction>(setter),
+                getContext(field),
+                reinterpret_cast<GenericFunction>(object_setter));
+
+            return *this;
+        }
+
+        template<typename Getter, typename Setter>
+        value_array& element(Getter getter, Setter setter) {
+            using namespace internal;
+            typedef GetterPolicy<Getter> GP;
+            typedef SetterPolicy<Setter> SP;
+
+            auto g = &GP::template get<ClassType>;
+            auto s = &SP::template set<ClassType>;
+            auto os = &SP::template object_set<ClassType>;
+            napi::register_class_property(
+                TypeID<ClassType>::get(),
+                nullptr,
+                reinterpret_cast<GenericFunction>(g),
+                getContext(getter),
+                reinterpret_cast<GenericFunction>(s),
+                getContext(setter),
+                reinterpret_cast<GenericFunction>(os));
+
+            return *this;
+        }
+
+        template<int Index>
+        value_array& element(index<Index>) {
+            using namespace internal;
+            ClassType* null = 0;
+            typedef typename std::remove_reference<decltype((*null)[Index])>::type ElementType;
+
+            auto getter = &internal::get_by_index<ClassType, ElementType>;
+            auto setter = &internal::set_by_index<ClassType, ElementType>;
+            auto osetter = &internal::object_set_by_index<ClassType, ElementType>;
+
+            napi::register_class_property(
+                TypeID<ClassType>::get(),
+                nullptr,
+                reinterpret_cast<GenericFunction>(getter),
+                reinterpret_cast<void*>(Index),
+                reinterpret_cast<GenericFunction>(setter),
+                reinterpret_cast<void*>(Index),
+                reinterpret_cast<GenericFunction>(osetter));
+            return *this;
+        }
+    };
+
+    ////////////////////////////////////////////////////////////////////////////////
     // VALUE STRUCTS
     ////////////////////////////////////////////////////////////////////////////////
 

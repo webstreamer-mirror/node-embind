@@ -117,7 +117,8 @@ void register_class_property(
 {
 	module_t& m = node_module();
 	property_t* prop = new property_t;
-	prop->name = fieldName;
+    prop->name = fieldName ? fieldName : strdup(std::to_string(m.classes[classType]->property.size()).c_str());
+        //strdup((std::string("_") +std::to_string(m.classes[classType]->property.size())).c_str());
 
 	typedef napi_value(*Setter)(const property_t*, const context_t&);
 	prop->setter = (Setter)setter;

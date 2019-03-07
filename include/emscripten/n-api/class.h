@@ -22,7 +22,8 @@ NS_NAPI_BEGIN
 	{
         enum SubType {
             generic = 0,
-            value_object
+            value_object,
+            value_array
         };
 		class_t() :name(nullptr), New(nullptr), ctor(nullptr)
             ,ref(nullptr), subtype(generic)
@@ -180,7 +181,8 @@ NS_NAPI_BEGIN
             else {
                 std::list<constructor_t*>& ctors = prototype->ctors;
 
-                if (prototype->subtype == class_t::value_object) {
+                if (prototype->subtype == class_t::value_object ||
+                    prototype->subtype == class_t::value_array) {
                     self->instance = ValueObject(ctx);
                 }
                 else {

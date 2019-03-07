@@ -68,12 +68,24 @@ namespace convertor {
         Class (const context_t& ctx, napi_value val) 
             : owner_(false)
         {
-            
-            this->value_ = GetObject<T>(ctx,val);
-            if (!this->value_ && napi::Class<T>::prototype->subtype == class_t::value_object) {
-
-                this->value_ = ValueObject(ctx,val);
+            if (napi::Class<T>::prototype->subtype == class_t::value_array) {
+                bool is_array = false;
+                napi_is_array(ctx.env, val, &is_array);
+                if (is_array) {
+                    this->value_ = ValueArray(ctx, val);
+                    return;
+                }
+                
             }
+            
+            this->value_ = GetObject<T>(ctx, val);
+            if (this->value_) return;
+
+            if (napi::Class<T>::prototype->subtype == class_t::value_object) {
+
+                this->value_ = ValueObject(ctx, val);
+            }
+            
         }
 
         inline static napi_value napivalue(const context_t& ctx, type val) {
@@ -92,6 +104,8 @@ namespace convertor {
                 napi_value key, value;
                 napi_status status;
                 napi_valuetype vtype;
+
+
                 status = napi_create_string_latin1(ctx.env, prop.name, NAPI_AUTO_LENGTH, &key);
                 status = napi_get_property(ctx.env, val, key, &value);
                 status = napi_typeof(ctx.env, value, &vtype);
@@ -102,6 +116,33 @@ namespace convertor {
             }
             return instance;
         }
+
+        inline T* ValueArray(const context_t& ctx, napi_value val) {
+            owner_ = true;
+            T* instance = new T();
+            std::list<property_t*>& props = napi::Class<T>::prototype->property;
+            int index = 0;
+            for (std::list<property_t*>::iterator it = props.begin();
+                it != props.end(); it++) {
+        
+                property_t& prop = *(*it);
+                napi_value  value;// , key;
+                napi_status status;
+                napi_valuetype vtype;
+                status = napi_typeof(ctx.env, val, &vtype);
+                bool is_array = false;
+                status = napi_is_array(ctx.env, val, &is_array);
+
+                status = napi_get_element(ctx.env, val,index++, &value);
+                status = napi_typeof(ctx.env, value, &vtype);
+                if (vtype == napi_undefined)
+                    continue;
+        
+                prop.object_setter(&prop, ctx, instance, value);
+            }
+            return instance;
+        }
+
     };
 
     template<typename T>
