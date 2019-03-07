@@ -55,45 +55,52 @@ namespace convertor {
     struct Class {
         typedef T type;
         type*     value_;
+        bool      owner_;
 
         type& value() { return *this->value_; }
         
-
-        Class (const context_t& ctx, napi_value val) {
+        ~Class() {
+            if (owner_ && value_) {
+                delete value_;
+                value_ = nullptr;
+            }
+        }
+        Class (const context_t& ctx, napi_value val) 
+            : owner_(false)
+        {
             
             this->value_ = GetObject<T>(ctx,val);
             if (!this->value_ && napi::Class<T>::prototype->subtype == class_t::value_object) {
-            //    ///////////////////////////////////////////////////////
-            //    // -- TODO
-            //    // --
-            //    // --
-            //    // --
-            //    
-                T* instance = new T();
-                std::list<property_t*>& props = napi::Class<T>::prototype->property;
-                for (std::list<property_t*>::iterator it = props.begin();
-                    it != props.end(); it++) {
-                
-                    property_t& prop = *(*it);
-                    napi_value key,value;
-                    napi_status status;
-                    napi_valuetype vtype;
-                    status = napi_create_string_latin1(ctx.env, prop.name, NAPI_AUTO_LENGTH, &key);
-                    status = napi_get_property(ctx.env, val, key, &value);
-                    status = napi_typeof(ctx.env, value, &vtype);
-                    if (vtype == napi_undefined)
-                        continue;
-                
-                    prop.object_setter(&prop, ctx, instance, value);
-                }
-                this->value_ = instance;
 
+                this->value_ = ValueObject(ctx,val);
             }
         }
 
         inline static napi_value napivalue(const context_t& ctx, type val) {
 
             return CreateObject<T>(ctx, &val, true);
+        }
+
+        inline T* ValueObject(const context_t& ctx, napi_value val) {
+            owner_ = true;
+            T* instance = new T();
+            std::list<property_t*>& props = napi::Class<T>::prototype->property;
+            for (std::list<property_t*>::iterator it = props.begin();
+                it != props.end(); it++) {
+
+                property_t& prop = *(*it);
+                napi_value key, value;
+                napi_status status;
+                napi_valuetype vtype;
+                status = napi_create_string_latin1(ctx.env, prop.name, NAPI_AUTO_LENGTH, &key);
+                status = napi_get_property(ctx.env, val, key, &value);
+                status = napi_typeof(ctx.env, value, &vtype);
+                if (vtype == napi_undefined)
+                    continue;
+
+                prop.object_setter(&prop, ctx, instance, value);
+            }
+            return instance;
         }
     };
 
