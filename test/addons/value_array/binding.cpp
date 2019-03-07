@@ -37,9 +37,7 @@ ValueArray return_ValueArray() {
     return ValueArray(1,2,3,4);
 }
 
-void xValueArray(ValueArray v) {
-    
-}
+
 
 
 
@@ -54,7 +52,6 @@ EMSCRIPTEN_BINDINGS(value_boject) {
         ;
     function("take_and_return_ValueArray", &take_and_return_ValueArray);
     function("return_ValueArray", &return_ValueArray);
-    function("xValueArray", &xValueArray);
 
 }
 
