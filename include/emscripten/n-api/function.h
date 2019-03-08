@@ -42,7 +42,7 @@ namespace emscripten {
 				context_t ctx;
 				ctx.env = env;
 				ctx.argv = nullptr;
-				cur_env(env);
+                VM::context(&ctx);
 
 				napi_get_cb_info(env, info, &ctx.argc, nullptr, &ctx.js, &ctx.data);
 				if (ctx.argc > 0)
@@ -52,7 +52,10 @@ namespace emscripten {
 
 				napi_get_cb_info(env, info, &ctx.argc, ctx.argv, &ctx.js, nullptr);
 				function_t* self = static_cast<function_t*>(ctx.data);
-				return self->invoke(self, ctx);
+				napi_value result = self->invoke(self, ctx);
+                VM::context(nullptr);
+                return result;
+
 			}
 		}
 	}

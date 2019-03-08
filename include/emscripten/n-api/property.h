@@ -24,6 +24,7 @@ inline static napi_value napi_setter(napi_env env, napi_callback_info info) {
 	context_t ctx;
 	ctx.env = env;
 	ctx.argv = nullptr;
+    VM::context(&ctx);
 
 	napi_get_cb_info(env, info, &ctx.argc, nullptr, &ctx.js, &ctx.data);
 	if (ctx.argc > 0)
@@ -33,13 +34,17 @@ inline static napi_value napi_setter(napi_env env, napi_callback_info info) {
 
 	napi_get_cb_info(env, info, &ctx.argc, ctx.argv, &ctx.js, nullptr);
 	property_t* self = static_cast<property_t*>(ctx.data);
-	return self->setter(self, ctx);
+	napi_value result = self->setter(self, ctx);
+    VM::context(nullptr);
+    return result;
 }
 
 inline static napi_value napi_getter(napi_env env, napi_callback_info info) {
 	context_t ctx;
 	ctx.env = env;
 	ctx.argv = nullptr;
+    VM::context(&ctx);
+
 	napi_get_cb_info(env, info, &ctx.argc, nullptr, &ctx.js, &ctx.data);
 	if (ctx.argc > 0)
 	{
@@ -48,7 +53,9 @@ inline static napi_value napi_getter(napi_env env, napi_callback_info info) {
 
 	napi_get_cb_info(env, info, &ctx.argc, ctx.argv, &ctx.js, nullptr);
 	property_t* self = static_cast<property_t*>(ctx.data);
-	return self->getter(self, ctx);
+	napi_value result = self->getter(self, ctx);
+    VM::context(nullptr);
+    return result;
 }
 
 NS_NAPI_END

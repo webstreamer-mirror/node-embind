@@ -44,14 +44,22 @@ struct context_t {
 	size_t argc;
 	napi_value* argv;
 	napi_value js;
+
 };
 
 
 
 struct VM {
-	static napi_env env_;
-	static napi_env get_napi_env() { return env_; } // do not us this directory
-	static void     set_napi_env(napi_env env) { env_ = env; }
+
+    inline static napi_env get_napi_env() { return context_ ? context_->env : nullptr; }
+
+    //
+    // internal
+    //
+    inline static void context(context_t* ctx) { context_ = ctx; }
+    inline static context_t* context() { return context_; }
+    static context_t* context_;
+
 };
 
 
@@ -59,7 +67,7 @@ struct VM {
 
 NS_NAPI_END
 
-#define __env__ VM::get_napi_env();
+//#define __env__ VM::get_napi_env();
 
 
 
