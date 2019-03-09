@@ -3,187 +3,49 @@
 #include <emscripten/n-api/common.h>
 
 NS_NAPI_BEGIN
-#if 0
-struct StackPointer {
 
-    StackPointer(napi_env env)
-        : env_(env), sp_(nullptr), args_(nullptr)
+//
+//  JArguments is used to manage the arguments excahnge between javascript and n-api
+//  we put the c++ arguments to glolbal.__embind.${adress} object for 
+//  $0 $1 $2 and result for function return value
+struct JArguments {
+
+    JArguments(const context_t& ctx)
+        : context_(ctx), args_(nullptr)
     {
-        sprintf(value_, "%p", this);
+        sprintf(address_, "$%p", this);
         this->args();
     }
 
     template<typename T0>
-    StackPointer(napi_env env, T0 v0)
-        : env_(env), sp_(nullptr), args_(nullptr)
+    JArguments(const context_t& ctx, T0 v0)
+        : context_(ctx), args_(nullptr)
     {
-        sprintf(value_, "%p", this);
+        sprintf(address_, "$%p", this);
         argv(0, v0);
     }
 
     template<typename T0, typename T1>
-    StackPointer(napi_env env, T0 v0, T1 v1)
-        : env_(env), sp_(nullptr), args_(nullptr)
+    JArguments(const context_t& ctx, T0 v0, T1 v1)
+        : context_(ctx), args_(nullptr)
     {
-        sprintf(value_, "%p", this);
+        sprintf(address_, "$%p", this);
         argv(0, v0);
         argv(1, v1);
     }
 
     template<typename T0, typename T1, typename T2>
-    StackPointer(napi_env env, T0 v0, T1 v1, T2 v2)
-        : env_(env), sp_(nullptr), args_(nullptr)
+    JArguments(const context_t& ctx, T0 v0, T1 v1, T2 v2)
+        : context_(ctx), args_(nullptr)
     {
-        sprintf(value_, "%p", this);
-        argv(0, v0);
-        argv(1, v1);
-        argv(2, v2);
-    }
-
-    const char* value() const { return value_; }
-    inline napi_value sp() {
-        if (sp_ == nullptr) {
-            napi_value global;
-            napi_get_global(env_, &global);
-            napi_value em = get_property(global, "__emscripten", true);
-            sp_ = get_property(em, "stack_pointer", true);
-        }
-        return sp_;
-    }
-
-    inline napi_value args(bool auto_create = true) {
-        if (args_ == nullptr) {
-            if (auto_create) {
-                napi_value key;
-                napi_create_string_latin1(env_, value_, NAPI_AUTO_LENGTH, &key);
-                napi_create_object(env_, &args_);
-                napi_set_property(env_, sp(), key, args_);
-            }
-        }
-        return args_;
-    }
-
-    template<typename T>
-    void argv(int i, T v) {
-        napi_value obj = this->args();
-        napi_value key;
-        char name[32];
-        sprintf(name, "$%d", i);
-        napi_create_string_latin1(env_, name, NAPI_AUTO_LENGTH, &key);
-        napi_set_property(env_, obj, key, napi::value<T>(env_,v).value());
-    }
-
-    napi_value result() {
-        napi_value obj = args(false);
-        bool has;
-        if (obj) {
-            napi_value key;
-            napi_create_string_latin1(env_, "result", NAPI_AUTO_LENGTH, &key);
-            napi_has_property(env_, obj, key, &has);
-            if (has) {
-                napi_value v;
-                napi_get_property(env_, obj, key, &v);
-                return v;
-            }
-        }
-        return nullptr;
-    }
-
-protected:
-    inline napi_value get_property(napi_value obj, const char* name, bool auto_create = true) {
-        napi_value key, val = nullptr;
-        napi_create_string_latin1(env_, name, NAPI_AUTO_LENGTH, &key);
-        bool has;
-        napi_has_property(env_, obj, key, &has);
-        if (has) {
-            napi_get_property(env_, obj, key, &val);
-        }
-        else {
-            if (auto_create) {
-                napi_create_object(env_, &val);
-                napi_set_property(env_, obj, key, val);
-            }
-        }
-        return val;
-    }
-
-    napi_env env_;
-    char value_[64];
-    napi_value sp_;
-    napi_value args_;
-
-};
-#endif
-struct JSContext {
-
-    JSContext(const context_t& ctx)
-        : context_(ctx), sp_(nullptr), args_(nullptr)
-    {
-        sprintf(value_, "%p", this);
-        this->args();
-    }
-
-    template<typename T0>
-    JSContext(const context_t& ctx, T0 v0)
-        : context_(ctx), sp_(nullptr), args_(nullptr)
-    {
-        sprintf(value_, "%p", this);
-        argv(0, v0);
-    }
-
-    template<typename T0, typename T1>
-    JSContext(const context_t& ctx, T0 v0, T1 v1)
-        : context_(ctx), sp_(nullptr), args_(nullptr)
-    {
-        sprintf(value_, "%p", this);
-        argv(0, v0);
-        argv(1, v1);
-    }
-
-    template<typename T0, typename T1, typename T2>
-    JSContext(const context_t& ctx, T0 v0, T1 v1, T2 v2)
-        : context_(ctx), sp_(nullptr), args_(nullptr)
-    {
-        sprintf(value_, "%p", this);
+        sprintf(address_, "$%p", this);
         argv(0, v0);
         argv(1, v1);
         argv(2, v2);
     }
 
 
-    const char* value() const { return value_; }
-    inline napi_value sp() {
-        if (sp_ == nullptr) {
-            napi_value global;
-            napi_get_global(context_.env, &global);
-            napi_value em = get_property(global, "__node_embind", true);
-            sp_ = get_property(em, "$sp", true);
-        }
-        return sp_;
-    }
-
-    inline napi_value args(bool auto_create = true) {
-        if (args_ == nullptr) {
-            if (auto_create) {
-                napi_value key;
-                napi_create_string_latin1(context_.env, value_, NAPI_AUTO_LENGTH, &key);
-                napi_create_object(context_.env, &args_);
-                napi_set_property(context_.env, sp(), key, args_);
-            }
-        }
-        return args_;
-    }
-
-    template<typename T>
-    void argv(int i, T v) {
-        napi_value obj = this->args();
-        napi_value key;
-        char name[32];
-        sprintf(name, "$%d", i);
-        napi_create_string_latin1(context_.env, name, NAPI_AUTO_LENGTH, &key);
-        napi_set_property(context_.env, obj, key, 
-            napi::value<T>::napivalue(context_, v));
-    }
+    const char* name() const { return address_; }
 
     napi_value result() {
         napi_value obj = args(false);
@@ -202,7 +64,34 @@ struct JSContext {
     }
 
 protected:
-    inline napi_value get_property(napi_value obj, const char* name, bool auto_create = true) {
+
+
+    inline napi_value args(bool auto_create = true) {
+        if (args_ == nullptr) {
+            if (auto_create) {
+                // create global object for the arguments
+                // global.__node_embind.${address}
+                napi_value global;
+                napi_get_global(context_.env, &global);
+                napi_value em = Property(global, "__node_embind");
+                args_ = Property(em, address_); // __node_embind.${address}
+            }
+        }
+        return args_;
+    }
+
+    template<typename T>
+    void argv(int i, T v) {
+        napi_value obj = this->args();
+        napi_value key;
+        char name[32];
+        sprintf(name, "$%d", i);
+        napi_create_string_latin1(context_.env, name, NAPI_AUTO_LENGTH, &key);
+        napi_set_property(context_.env, obj, key,
+            napi::value<T>::napivalue(context_, v));
+    }
+
+    inline napi_value Property(napi_value obj, const char* name, bool auto_create = true) {
         napi_value key, val = nullptr;
         napi_create_string_latin1(context_.env, name, NAPI_AUTO_LENGTH, &key);
         bool has;
@@ -220,9 +109,9 @@ protected:
     }
 
     const context_t& context_;
-    char value_[64];
-    napi_value sp_;
+    char address_[128];
     napi_value args_;
+
 };
 
 struct JScript {
@@ -241,27 +130,27 @@ struct JScript {
 #define JSCRIPT_LINE_END "\n"
     template<typename ...Args>
     napi_value call(const std::vector<std::string>& argv, Args... args) {
-        JSContext sp(context_, args...);
+        JArguments jctx(context_, args...);
         char expr[256];
-        sprintf(expr, "var $sp = global.__node_embind.$sp['%s'];" JSCRIPT_LINE_END, sp.value());
+        sprintf(expr, "var $this = global.__node_embind.%s;" JSCRIPT_LINE_END, jctx.name());
         
 
         std::string jscript(expr);
-        jscript += "$sp.fn=function(){" JSCRIPT_LINE_END;
+        jscript += "$this.fn=function(){" JSCRIPT_LINE_END;
 
         for (int i = 0; i < (int)(sizeof...(Args)); i++) {
             if ((int)argv.size() > i) {
-                sprintf(expr, "var %s = $sp.$%d;" JSCRIPT_LINE_END, argv[i].c_str(), i);
+                sprintf(expr, "var %s = $this.$%d;" JSCRIPT_LINE_END, argv[i].c_str(), i);
             }
             else {
-                sprintf(expr, "var $%d = $sp.$%d;" JSCRIPT_LINE_END, i, i);
+                sprintf(expr, "var $%d = $this.$%d;" JSCRIPT_LINE_END, i, i);
             }
             jscript += expr;
         }
         
         jscript += script_;
 
-        sprintf(expr, "};" JSCRIPT_LINE_END	"$sp.result =$sp.fn();" JSCRIPT_LINE_END);
+        sprintf(expr, "};" JSCRIPT_LINE_END	"$this.result =$this.fn();" JSCRIPT_LINE_END);
 
         jscript += expr;
 
@@ -269,7 +158,7 @@ struct JScript {
         napi_status status = napi_create_string_latin1(context_.env, jscript.data(), jscript.size(), &nscript);
         status = napi_run_script(context_.env, nscript, &result);
         assert(status == napi_ok);
-        return sp.result();
+        return jctx.result();
 
     }
 

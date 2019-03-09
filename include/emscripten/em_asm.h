@@ -20,7 +20,7 @@ namespace em_asm {
         inline static ReturnType invoke(const char* code, Args... args) {
             emscripten::internal::napi::context_t* ctx = emscripten::internal::napi::VM::context();
             assert(ctx && ctx->env);
-            return emscripten::internal::napi::value<int>(*ctx,
+            return emscripten::internal::napi::value<ReturnType>(*ctx,
                    emscripten::internal::napi::JScript(*ctx, code).Call(args...)).value();
         }
     };

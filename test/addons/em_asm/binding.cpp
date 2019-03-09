@@ -138,12 +138,14 @@ struct embind_EM_ASM_DOUBLE {
     static  double case_1() {
         return EM_ASM_DOUBLE({
         out("  takes ints: " + $0);
+        return $0
             }, 5);
     }
 
     static  double case_2() {
         return EM_ASM_DOUBLE({
         out("  takes doubles: " + $0);
+        return $0
             }, 5.0675);
     }
 
@@ -170,9 +172,11 @@ struct embind_EM_ASM_DOUBLE {
 
     static  double case_6() {
         return EM_ASM_DOUBLE({
+
         out("  ignores unused args");
         return 5.5;
-            }, 0);
+
+        }, 0);
     }
 
     static  double case_7() {

@@ -6,14 +6,16 @@ const addon = addons.em_asm;
 const {
     wiht_comma_max,
     EM_ASM,
-    EM_ASM_INT
+    EM_ASM_INT,
+    EM_ASM_DOUBLE
 } = addon;
 global.out = function out(val){
     out.result = val;
 }
-EM_ASM_INT.case_1();
+var  n = EM_ASM_DOUBLE.case_6();
+
 //var n = EM_ASM.case_1();
-//console.log(n)
+console.log(n)
 
 //global.gc()
 /********************* End *********************/
