@@ -11,7 +11,7 @@ NS_NAPI_BEGIN
 
 bool Module::EMBIND_STD_STRING_IS_UTF8 = false;
 bool Module::GARBAGE_CLEANING = true;
-
+context_t* VM::context_ = nullptr;
 
 napi_value Module::Init(napi_env env, napi_value exports) {
 	module_t& m = node_module();
