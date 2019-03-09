@@ -116,8 +116,6 @@ protected:
 #endif
 struct JSContext {
 
-    const context_t& context_;
-
     JSContext(const context_t& ctx)
         : context_(ctx), sp_(nullptr), args_(nullptr)
     {
@@ -157,7 +155,7 @@ struct JSContext {
     inline napi_value sp() {
         if (sp_ == nullptr) {
             napi_value global;
-            napi_get_global(env_, &global);
+            napi_get_global(context_.env, &global);
             napi_value em = get_property(global, "__node_embind", true);
             sp_ = get_property(em, "$sp", true);
         }
@@ -168,9 +166,9 @@ struct JSContext {
         if (args_ == nullptr) {
             if (auto_create) {
                 napi_value key;
-                napi_create_string_latin1(env_, value_, NAPI_AUTO_LENGTH, &key);
-                napi_create_object(env_, &args_);
-                napi_set_property(env_, sp(), key, args_);
+                napi_create_string_latin1(context_.env, value_, NAPI_AUTO_LENGTH, &key);
+                napi_create_object(context_.env, &args_);
+                napi_set_property(context_.env, sp(), key, args_);
             }
         }
         return args_;
@@ -182,7 +180,7 @@ struct JSContext {
         napi_value key;
         char name[32];
         sprintf(name, "$%d", i);
-        napi_create_string_latin1(env_, name, NAPI_AUTO_LENGTH, &key);
+        napi_create_string_latin1(context_.env, name, NAPI_AUTO_LENGTH, &key);
         napi_set_property(context_.env, obj, key, 
             napi::value<T>::napivalue(context_, v));
     }
@@ -192,11 +190,11 @@ struct JSContext {
         bool has;
         if (obj) {
             napi_value key;
-            napi_create_string_latin1(env_, "result", NAPI_AUTO_LENGTH, &key);
-            napi_has_property(env_, obj, key, &has);
+            napi_create_string_latin1(context_.env, "result", NAPI_AUTO_LENGTH, &key);
+            napi_has_property(context_.env, obj, key, &has);
             if (has) {
                 napi_value v;
-                napi_get_property(env_, obj, key, &v);
+                napi_get_property(context_.env, obj, key, &v);
                 return v;
             }
         }
@@ -206,22 +204,22 @@ struct JSContext {
 protected:
     inline napi_value get_property(napi_value obj, const char* name, bool auto_create = true) {
         napi_value key, val = nullptr;
-        napi_create_string_latin1(env_, name, NAPI_AUTO_LENGTH, &key);
+        napi_create_string_latin1(context_.env, name, NAPI_AUTO_LENGTH, &key);
         bool has;
-        napi_has_property(env_, obj, key, &has);
+        napi_has_property(context_.env, obj, key, &has);
         if (has) {
-            napi_get_property(env_, obj, key, &val);
+            napi_get_property(context_.env, obj, key, &val);
         }
         else {
             if (auto_create) {
-                napi_create_object(env_, &val);
-                napi_set_property(env_, obj, key, val);
+                napi_create_object(context_.env, &val);
+                napi_set_property(context_.env, obj, key, val);
             }
         }
         return val;
     }
 
-    napi_env env_;
+    const context_t& context_;
     char value_[64];
     napi_value sp_;
     napi_value args_;
@@ -240,29 +238,30 @@ struct JScript {
         return this->call(std::vector<std::string>(), args...);
     }
 
+#define JSCRIPT_LINE_END "\n"
     template<typename ...Args>
     napi_value call(const std::vector<std::string>& argv, Args... args) {
         JSContext sp(context_, args...);
         char expr[256];
-        sprintf(expr, "var $sp = global.__node_embind.$sp['%s'];", sp.value());
+        sprintf(expr, "var $sp = global.__node_embind.$sp['%s'];" JSCRIPT_LINE_END, sp.value());
         
 
         std::string jscript(expr);
-        jscript += "$sp.fn=function(){";
+        jscript += "$sp.fn=function(){" JSCRIPT_LINE_END;
 
         for (int i = 0; i < (int)(sizeof...(Args)); i++) {
             if ((int)argv.size() > i) {
-                sprintf(expr, "var %s = $sp.$%d;", argv[i].c_str(), i);
+                sprintf(expr, "var %s = $sp.$%d;" JSCRIPT_LINE_END, argv[i].c_str(), i);
             }
             else {
-                sprintf(expr, "var $%d = $sp.$%d;", i, i);
+                sprintf(expr, "var $%d = $sp.$%d;" JSCRIPT_LINE_END, i, i);
             }
             jscript += expr;
         }
-
+        
         jscript += script_;
 
-        sprintf(expr, "};"	"$sp.result =$sp.fn();");
+        sprintf(expr, "};" JSCRIPT_LINE_END	"$sp.result =$sp.fn();" JSCRIPT_LINE_END);
 
         jscript += expr;
 

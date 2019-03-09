@@ -78,12 +78,14 @@ struct embind_EM_ASM_INT {
     static  int case_1() {
         return EM_ASM_INT({
         out("  takes ints: " + $0);
+        return $0;
             }, 5);
     }
 
     static  int case_2() {
         return EM_ASM_INT({
         out("  takes doubles: " + $0);
+        return $0;
             }, 5.0675);
     }
 

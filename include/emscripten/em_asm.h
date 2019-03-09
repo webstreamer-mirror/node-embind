@@ -12,10 +12,6 @@
 #include <emscripten/n-api/jfunction.h>
 
 
-//template<typename ...Args>
-//napi_value Call(Args... args) {
-//    return this->call(std::vector<std::string>(), args...);
-//}
 NS_NAPI_BEGIN
 namespace em_asm {
     template<typename ReturnType>
@@ -35,8 +31,7 @@ namespace em_asm {
         inline static void invoke(const char* code, Args... args) {
             emscripten::internal::napi::context_t* ctx = emscripten::internal::napi::VM::context();
             assert(ctx && ctx->env);
-            emscripten::internal::napi::value<int>(*ctx,
-            emscripten::internal::napi::JScript(*ctx, code).Call(args...)).value();
+            emscripten::internal::napi::JScript(*ctx, code).Call(args...);
         }
     };
 }
@@ -44,18 +39,10 @@ NS_NAPI_END
 
 
 #define _embindEM_ASM(code, ...) emscripten::internal::napi::em_asm::VoidInvoker::invoke(#code,__VA_ARGS__)
-//emscripten::internal::napi::JScript( #code ).Call( __VA_ARGS__ );
 
 #define _embindEM_ASM_INT(code, ...) emscripten::internal::napi::em_asm::Invoker<int>::invoke(#code,__VA_ARGS__)
 
-    //emscripten::internal::napi::value<int>(*emscripten::internal::napi::VM::context(),\
-    //emscripten::internal::napi::JScript(#code).Call( __VA_ARGS__ ).value()\
-    //)
-
 #define _embindEM_ASM_DOUBLE(code, ...) emscripten::internal::napi::em_asm::Invoker<double>::invoke(#code,__VA_ARGS__)
-    //emscripten::napi::value<double>(emscripten::internal::cur_env()).native_cast(\
-    //emscripten::internal::napi::JScript(#code).Call( __VA_ARGS__ )\
-    //)
 
 
 

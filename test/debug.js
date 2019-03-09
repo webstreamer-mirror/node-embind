@@ -1,40 +1,19 @@
 console.log("[debug.js] Begin.")
 /********************* Begin **********************/
 const addons=require('./addons')
-const addon = addons.value_array;
+const addon = addons.em_asm;
 /********************* Loaded *********************/
 const {
-    ValueArray,
-    take_and_return_ValueArray,
-    return_ValueArray,
-    xValueArray
+    wiht_comma_max,
+    EM_ASM,
+    EM_ASM_INT
 } = addon;
-
-
-//const assert = require('assert')
-var c0 = new ValueArray();
-//var c1 = take_and_return_ValueObject(c);
-//c={v1: 1, v2: 2, v3: 3, v4: 4}
-var c1 = take_and_return_ValueArray(c0);
-
-var c =take_and_return_ValueArray([1,2,3,4]);
-// c.v1 =1;
-// c.v2 =2;
-// c.v3 =3;
-// c.v4 =4;
-console.log(c)
-console.log(c[0]);
-console.log(c[1]);
-console.log(c[2]);
-console.log(c[3]);
-console.log(c[4]);
-
-console.log('----------------------')
-console.log(c1[0]);
-console.log(c1[1]);
-console.log(c1[2]);
-console.log(c1[3]);
-console.log(c1[4]);
+global.out = function out(val){
+    out.result = val;
+}
+EM_ASM_INT.case_1();
+//var n = EM_ASM.case_1();
+//console.log(n)
 
 //global.gc()
 /********************* End *********************/
