@@ -130,9 +130,9 @@ struct JScript {
 #define JSCRIPT_LINE_END "\n"
     template<typename ...Args>
     napi_value call(const std::vector<std::string>& argv, Args... args) {
-        JArguments jctx(context_, args...);
+        JArguments jargs(context_, args...);
         char expr[256];
-        sprintf(expr, "var $this = global.__node_embind.%s;" JSCRIPT_LINE_END, jctx.name());
+        sprintf(expr, "var $this = global.__node_embind.%s;" JSCRIPT_LINE_END, jargs.name());
         
 
         std::string jscript(expr);
@@ -158,7 +158,7 @@ struct JScript {
         napi_status status = napi_create_string_latin1(context_.env, jscript.data(), jscript.size(), &nscript);
         status = napi_run_script(context_.env, nscript, &result);
         assert(status == napi_ok);
-        return jctx.result();
+        return jargs.result();
 
     }
 
