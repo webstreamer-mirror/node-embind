@@ -60,9 +60,8 @@ struct _JFunction : public _JFunctionBase {
     static ReturnType Call(const char* params, const char* script, Args... args) {
         context_t* ctx = VM::context();
         assert(ctx && ctx->env);
-        call_(*ctx, params, script, args...);
 
-        return napi::value<ReturnType>(ctx, call_(*ctx, params, script, args...)).value();
+        return napi::value<ReturnType>(*ctx, call_(*ctx, params, script, args...)).value();
     }
 };
 

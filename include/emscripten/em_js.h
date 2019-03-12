@@ -57,25 +57,33 @@ template<typename ReturnType, typename... Args> 										          \
 struct ____##name##_JFunction {};               										          \
 template<typename ReturnType>                   										          \
 struct ____##name##_JFunction<ReturnType>                                                         \
-        : public ::emscripten::internal::napi::_JFunction<ReturnType> {    		                      \
+        : public ::emscripten::internal::napi::_JFunction<ReturnType> {    		                  \
 	static ReturnType function() {														          \
-		return ::emscripten::internal::napi::_JFunction<ReturnType>::Call(#params, #code);	          \
+		return ::emscripten::internal::napi::_JFunction<ReturnType>::Call(#params, #code);	      \
 	}																					          \
 };																						          \
 template<typename ReturnType, typename T0>												          \
 struct ____##name##_JFunction <ReturnType, T0>                                                    \
-        : public ::emscripten::internal::napi::_JFunction<ReturnType> {		                          \
+        : public ::emscripten::internal::napi::_JFunction<ReturnType> {		                      \
 	static ReturnType function(T0 v0) {													          \
-		return ::emscripten::internal::napi::_JFunction<ReturnType                                      \
+		return ::emscripten::internal::napi::_JFunction<ReturnType                                \
 		         >::Call(#params, #code, v0);					                                  \
 	}																					          \
 };																						          \
 template<typename ReturnType, typename T0, typename T1>									          \
 struct ____##name##_JFunction <ReturnType, T0, T1>                                                \
-         : public ::emscripten::internal::napi::_JFunction<ReturnType> {	                              \
+         : public ::emscripten::internal::napi::_JFunction<ReturnType> {	                      \
 	static ReturnType function(T0 v0, T1 v1) {										              \
-		return ::emscripten::internal::napi::_JFunction<ReturnType                                      \
+		return ::emscripten::internal::napi::_JFunction<ReturnType                                \
 		         >::Call(#params, #code, v0,v1);		   	                                      \
+	}																				              \
+};																						          \
+template<typename ReturnType, typename T0, typename T1, typename T2>  				              \
+struct ____##name##_JFunction <ReturnType, T0, T1, T2>                                            \
+         : public ::emscripten::internal::napi::_JFunction<ReturnType> {	                      \
+	static ReturnType function(T0 v0, T1 v1, T2 v2) {							                  \
+		return ::emscripten::internal::napi::_JFunction<ReturnType                                \
+		         >::Call(#params, #code, v0,v1,v2);		   	                                      \
 	}																				              \
 };																						          \
 template<typename ReturnType>                                                                     \
@@ -96,7 +104,7 @@ inline static void* ____##name##_function(ReturnType(*f)(T0, T1, T2)) {					    
 }                                                                                                 \
 typedef ret(*____##name##_function_type) params;                                                  \
 }}}/*!emscripten_::em_js::internal*/                                                              \
-static  ret (* name) params = (emscripten_::em_js::internal::____##name##_function_type)          \
+static ret (* const name) params = (emscripten_::em_js::internal::____##name##_function_type)          \
         emscripten_::em_js::internal::____##name##_function(                                      \
               (emscripten_::em_js::internal::____##name##_function_type)0 );                      
                                                                                                   
